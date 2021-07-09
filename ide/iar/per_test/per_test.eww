@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\per_test_cc2541em.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\per_test_cc2543em.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\per_test_cc2544dongle.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\per_test_cc2545em.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
