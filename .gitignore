@@ -1,3 +1,6 @@
+*.d51
+*.r51
+
 # Prerequisites
 *.d
 
