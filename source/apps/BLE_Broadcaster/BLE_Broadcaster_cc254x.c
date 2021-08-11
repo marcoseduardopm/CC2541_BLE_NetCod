@@ -73,8 +73,9 @@
 #include "hal_button.h"
 #include "hal_led.h"
 
-#define DEBUG 0
-
+#define DEBUG 1
+#define MODETX 0
+#define DELAYTIME 60000 //for TX
 #if(DEBUG)
   #include <stdio.h>
 #endif
@@ -872,80 +873,23 @@ unsigned char remoteRxMode(void) {
 */
 
 
-void justSend()
-{
-  
-  unsigned char Address[6];
-  Address[0] = 0; // Address (LSB)
-  Address[1] = 1;
-  Address[2] = 2;
-  Address[3] = 3;
-  Address[4] = 4;
-  Address[5] = 5; // Address (MSB)  
-  
-  unsigned char data[3];
-  data[0] = 0x11;
-  data[1] = 0x22;
-  data[2] = 0x33;
-  
-  
-  //obtainSem0();
-  halRfBroadcastLoadPacket(data, 3, Address);
-  //releaseSem0();
-    
-  unsigned char L= RFTXFLEN;
-  PRINTF("La: %d\n", L);
-  
-  // Start transmitter.
-  while(RFST != 0);
-  RFST = CMD_TX;
-
-  
-  // Wait for TASKDONE and halt CPU (PM0) until task is completed.
-  while (!( RFIRQF1 & RFIRQF1_TASKDONE)) {
-    /*
-#if(POWER_SAVING)
-      halSleepEnterPowerMode(CPU_HALT);
-#endif
-//*/
-  }     
-
-  // If data received read FIFO   
-  if(PRF.ENDCAUSE == TASK_ENDOK)    
-  {        
-    //Get packet data.
-    //halRfLoadBLEBroadcastPacketPayload();
-    PRINTF("Tx Ok\n");
-  } else {
-    PRINTF("Tx NOk\n");
-  }
-  L= RFTXFLEN;
-  PRINTF("Lb: %d\n", L);
-  
-  //Necessary to ensure that the semaphore is released after this function ends.
-  //Looks like other tasks (like sleep modes) might disrupt the semaphore.
-  //Futher investigation is necessary.
-  //Sem. error otherwise
-  obtainSem0();
-  PRF.ENDCAUSE = TASK_UNDEF;
-  releaseSem0();
-  
-}
 
 
-void halRfLoadBLEBroadcastPacketPayload(void)
+void halRfLoadBLEBroadcastPacketPayload(uint8 print)
 {
   int received_data[16];
   uint8 i;
   uint8 send_data_length = RFRXFLEN;
-  PRINTF("Received %d: ", send_data_length);
+  if(print)
+    PRINTF("%d: ", send_data_length);
   //Number of bytes effective data
   //send_data_length = (sizeof(data_to_send)/sizeof(int));
 
   //Read data from FIFO
   for(i=0;i<send_data_length;i++){
     received_data[i] = RFD;
-    PRINTF("%d ", received_data[i]);
+    if(print)
+      PRINTF("%d ", received_data[i]);
   }
   PRINTF("\n");
 
@@ -1074,6 +1018,74 @@ void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 #endif
 }
 
+void justSend()
+{
+  
+  unsigned char Address[6];
+  Address[0] = 0; // Address (LSB)
+  Address[1] = 1;
+  Address[2] = 2;
+  Address[3] = 3;
+  Address[4] = 4;
+  Address[5] = 5; // Address (MSB)  
+  
+  unsigned char data[3];
+  data[0] = 0x11;
+  data[1] = 0x22;
+  data[2] = 0x33;
+  
+  
+  //obtainSem0();
+  halRfBroadcastLoadPacket(data, 3, Address);
+  //releaseSem0();
+    
+  unsigned char L= RFTXFLEN;
+  PRINTF("La: %d\n", L);
+  
+  // Start transmitter.
+  while(RFST != 0);
+  RFST = CMD_TX;
+
+  
+  // Wait for TASKDONE and halt CPU (PM0) until task is completed.
+  while (!( RFIRQF1 & RFIRQF1_TASKDONE)) {
+    /*
+#if(POWER_SAVING)
+      halSleepEnterPowerMode(CPU_HALT);
+#endif
+//*/
+  }     
+
+  // If data received read FIFO   
+  if(PRF.ENDCAUSE == TASK_ENDOK)    
+  {        
+    //Get packet data.
+    //halRfLoadBLEBroadcastPacketPayload();
+    PRINTF("Tx Ok\n");
+    
+    //Turn the LED ON
+    MCU_IO_OUTPUT(1, 2, 1);
+    sleepMode(50, 0); //sleep 
+    //Ensure that the P12 is at input (high impedance)
+    MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
+    
+  } else {
+    PRINTF("Tx NOk\n");
+    //Turn the LED ON
+    MCU_IO_OUTPUT(1, 2, 1);
+  }
+  L= RFTXFLEN;
+  PRINTF("Lb: %d\n", L);
+  
+  //Necessary to ensure that the semaphore is released after this function ends.
+  //Looks like other tasks (like sleep modes) might disrupt the semaphore.
+  //Futher investigation is necessary.
+  //Sem. error otherwise
+  obtainSem0();
+  PRF.ENDCAUSE = TASK_UNDEF;
+  releaseSem0();
+  
+}
 
 
 /*******************************************************************************
@@ -1090,6 +1102,9 @@ int main(void) {
     // Clear the global RFIRQF1 shadow variable (RF Interrupt flags).
     rfirqf1 = 0;
 
+    //Ensure that the P12 is at input (high impedance)
+    MCU_IO_INPUT(1, 2, MCU_IO_PULLDOWN);
+    
     /* Initialize Clock Source (32 Mhz Xtal),
     *  global interrupt (EA=1),  I/O ports and pheripherals(LCD). */
     halBoardInit();
@@ -1111,9 +1126,9 @@ int main(void) {
 #endif
     halRfEnableRadio();//= LLECTRL := 0x01;
 
-    uint8 modeTx = 1;
+    //uint8 modeTx = 0;
     // 
-    if(modeTx == 0)
+    if(MODETX == 0)
     {
       /*
       halIntOff();
@@ -1132,18 +1147,40 @@ int main(void) {
 //*/
 
     }
+    //all pins must be at high-impedance (input) if not used or output low
+    for(int i = 0; i < 8; i++)
+    {
+      MCU_IO_INPUT(0, i, MCU_IO_PULLDOWN);
+      MCU_IO_INPUT(1, i, MCU_IO_PULLDOWN);
+    }    
+    
+    for(int i = 0; i < 5; i++)
+    {
+      MCU_IO_INPUT(2, i, MCU_IO_PULLDOWN);
+    }
 
+    sleepMode(3000, 0); //sleep 
+    //Turn the LED ON
+    MCU_IO_OUTPUT(1, 2, 1);
+    sleepMode(200, 0); //sleep 
+    //Ensure that the P12 is at input (high impedance)
+    MCU_IO_INPUT(1, 2, MCU_IO_PULLDOWN);
+    
     
 
     while(1)  
     {
-      if(modeTx)
-      {
+#if(MODETX)
+      //{
         halRfDisableRadio(FORCE);
         
         //sleepMode(300000, 0); //sleep 60s before attempt to transmit
-        sleepMode(10000, 0); //sleep 60s before attempt to transmit
+        //sleepMode(60000, 0); //sleep 60s before attempt to transmit
+        sleepMode(DELAYTIME, 0); //sleep 60s before attempt to transmit
         
+        //Put the LED at high impedance
+        MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
+    
         halRfEnableRadio();//= LLECTRL := 0x01
         justSend();
         
@@ -1155,9 +1192,11 @@ int main(void) {
         //obtainSem0();
         // Set to a undefined value in enum type end cause.
         PRF.ENDCAUSE = TASK_UNDEF;
+        
         //releaseSem0();
         
-      } else {;
+      //} else {
+#else
 
         // Start receiver.
         halRfStartRx();
@@ -1177,10 +1216,10 @@ int main(void) {
         {      
           if(RFIRQF1 & RFIRQF1_RXOK) {
             PRINTF("Ok ");
-            halRfLoadBLEBroadcastPacketPayload();
+            halRfLoadBLEBroadcastPacketPayload(1);
           } else if(RFIRQF1 & RFIRQF1_RXNOK) {
-            PRINTF("NOk ");
-            halRfLoadBLEBroadcastPacketPayload();          
+            //PRINTF("NOk ");
+            //halRfLoadBLEBroadcastPacketPayload(1);          
           } else {
             PRINTF("*");
           }        
@@ -1217,11 +1256,12 @@ int main(void) {
         //releaseSem0();
         //
         
-        sleepMode(4000, 0);
+        //sleepMode(4000, 0);
         
         // 4000 ms delay.
         //halMcuWaitMs(4000);
-      }        
+      //}        
+#endif
        // PRINTF("PRF.ENDCAUSE: %d\n", PRF.ENDCAUSE);
      
       //simpleRawSendTest();

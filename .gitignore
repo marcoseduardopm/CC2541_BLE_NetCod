@@ -1,5 +1,11 @@
 *.d51
 *.r51
+*.wsdt
+*.bat
+*.ps1
+*.xcl
+*.dbgdt
+*.dnx
 
 # Prerequisites
 *.d
