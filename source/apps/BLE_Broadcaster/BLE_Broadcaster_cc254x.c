@@ -73,8 +73,8 @@
 #include "hal_button.h"
 #include "hal_led.h"
 
-#define DEBUG 1
-#define MODETX 0
+#define DEBUG 0
+#define MODETX 1
 #define DELAYTIME 60000 //for TX
 #if(DEBUG)
   #include <stdio.h>
