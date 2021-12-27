@@ -60,3 +60,8 @@ Mkfile.old
 dkms.conf
 **\temp\**
 temp\**
+*.hex
+*.pdf
+*.dep
+ide/iar/BLE_Broadcaster/temp/
+ide/iar/BLE_Broadcaster/settings/
