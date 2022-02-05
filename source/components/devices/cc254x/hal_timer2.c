@@ -45,6 +45,7 @@
 #include "hal_int.h"
 #include "prop_regs.h"
 #include "ioCC254x_bitdef.h"
+#include "myData.h"
 
 // Include device specific file
 #if (chip==2541)
@@ -87,6 +88,9 @@ HAL_ISR_FUNCTION(T2_ISR,T2_VECTOR) {
     T2IRQF = ~t2irqf;
     // Clear [IRCON.T2IF] ( Timer 2 interrupt flag ).
     T2IF = 0;
+    if(myDevice.timer){
+        myDevice.timer--;
+    }
 }
 
 
