@@ -308,6 +308,8 @@
                     <state>chip=2541</state>
                     <state>POWER_SAVING=1</state>
                     <state>LCD_EXCLUDE</state>
+                    <state>PLACA_A=1</state>
+                    <state>PLACA_B=0</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -472,6 +474,7 @@
                     <state>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\targets\interface</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\devices\cc254x</state>
+                    <state>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\utils</state>
                 </option>
