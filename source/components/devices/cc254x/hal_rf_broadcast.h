@@ -51,6 +51,7 @@
 #define FAIL_RADIO_ACTIVE           4
 
 // BLE broadcast channels.
+#define BLE_BROADCAST_CHANNEL_30 87     // 2466 MHz
 #define BLE_BROADCAST_CHANNEL_37 23     // 2402 MHz
 #define BLE_BROADCAST_CHANNEL_38 47     // 2426 MHz
 #define BLE_BROADCAST_CHANNEL_39 101    // 2480 MHz
