@@ -128,7 +128,7 @@ void halRfBroadcastInit(void)
     PRF.ADDR_ENTRY[0].CONF.REUSE    = 0;    // Reuse packet on same adv event (same payload on all three if active broadcast channels.)
     PRF.ADDR_ENTRY[0].CONF.ENA0 = 1;        // Necessary, according to TI to receive BLE packets.
     PRF.ADDR_ENTRY[0].CONF.VARLEN = 0;           // 0: Use fixed length given by RXLENGTH in receiver when receiving packets or ACKs
-    PRF.ADDR_ENTRY[0].RXLENGTH = 16;        //
+    PRF.ADDR_ENTRY[0].RXLENGTH = 16;//16;        //
  
     
     //Sem1
@@ -213,17 +213,21 @@ unsigned char halRfBroadcastSetChannel(unsigned char AdvChannel)
    * PRF_W_INIT should be set to 37, 38, or 39 (0x25, 0x26, or 0x27).
    */
     switch(AdvChannel) {
-    case BLE_BROADCAST_CHANNEL_37 :
+    case BLE_BROADCAST_CHANNEL_37 ://freq padrao 2379
         PRF.CHAN.FREQ = 23;                 // Set frequency to 2402 MHz.
         PRF_W_INIT = 0x25;                  // Init according to BLE channel 37.
         break;
-    case BLE_BROADCAST_CHANNEL_38 :
+    case BLE_BROADCAST_CHANNEL_38 ://freq padrao 2379
         PRF.CHAN.FREQ = 47;                 // Set frequency to 2426 MHz.
         PRF_W_INIT = 0x26;                  // Init according to BLE channel 37.
         break;
-    case BLE_BROADCAST_CHANNEL_39 :
+    case BLE_BROADCAST_CHANNEL_39 ://freq padrao 2379
         PRF.CHAN.FREQ = 101;                // Set frequency to 2480 MHz.
         PRF_W_INIT = 0x27;                  // Init according to BLE channel 37.
+        break;
+    case BLE_BROADCAST_CHANNEL_30 ://freq padrao 2379
+        PRF.CHAN.FREQ = 87;                // Set frequency to 2466 MHz.
+        PRF_W_INIT = 0x1E;                 // Init according to BLE channel 37.
         break;
     default :
         releaseSem0();
