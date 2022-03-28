@@ -60,3 +60,9 @@ Mkfile.old
 dkms.conf
 **\temp\**
 temp\**
+*.hex
+*.d51
+*.pbd
+*.browse
+*.pbi
+*.pbi

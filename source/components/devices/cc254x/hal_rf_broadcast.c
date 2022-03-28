@@ -128,7 +128,7 @@ void halRfBroadcastInit(void)
     PRF.ADDR_ENTRY[0].CONF.REUSE    = 0;    // Reuse packet on same adv event (same payload on all three if active broadcast channels.)
     PRF.ADDR_ENTRY[0].CONF.ENA0 = 1;        // Necessary, according to TI to receive BLE packets.
     PRF.ADDR_ENTRY[0].CONF.VARLEN = 0;           // 0: Use fixed length given by RXLENGTH in receiver when receiving packets or ACKs
-    PRF.ADDR_ENTRY[0].RXLENGTH = 16;        //
+    PRF.ADDR_ENTRY[0].RXLENGTH = 18;        //16 //needs to be adjusted according to the packet we want to receive
  
     
     //Sem1
@@ -145,7 +145,12 @@ void halRfBroadcastInit(void)
     
     // Update these
     TXCTRL    = 0x69;
-    TXPOWER   = 0xE5;               // Set output power: 4 dBm.
+    //https://community.silabs.com/s/article/kba-bt-0410-tx-power-limitations-for-regulatory-compliance-etsi-fcc-x?language=en_US
+    //Considering regulations of FCC and ETSI, when AFH is applied and at least 15 channels are available, the maximum conducted output power, which is allowed by BLE stack, is 20 dBm on all channels except of on channel 37 and 38 (physical channels not logical channels) . The output power is limited to 18 dBm on channel 37 and 15.3 dBm on channel 38 in the case of all PHYs. There isn’t any limitation on channel 39, because the upper channel is only used for advertisements, so with the low duty cycle correction advertisements can be sent at full power.
+    //0xE1 = 0dBm
+    //0xE5 = 4dBm
+    //0xF3 = 18dBm
+    TXPOWER   = 0xF3;               // Set output power: 18 dBm.
     TXFILTCFG = 0x07;               // Set Tx filter bandwidth.
     IVCTRL    = 0x13;               // Set PA, mixer and DAC bias.
     ADCTEST0  = 0x10;               // Adjust ADC gain.
@@ -169,7 +174,7 @@ void halRfBroadcastInit(void)
     MDMTEST0  = 0x01; 
      
     // Set 32 bit sync word:
-    SW_CONF = 0x00;
+    SW_CONF = 0x00; // for BLE: 4 byte of access address, which is always 0x8E89BED6 for advertizing packets.
     SW0 = 0xD6;
     SW1 = 0xBE;
     SW2 = 0x89;
@@ -226,9 +231,11 @@ unsigned char halRfBroadcastSetChannel(unsigned char AdvChannel)
         PRF_W_INIT = 0x27;                  // Init according to BLE channel 37.
         break;
     default :
-        releaseSem0();
+        PRF.CHAN.FREQ = AdvChannel;                 // Set frequency to 2402 MHz.
+        PRF_W_INIT = 0x25;                  // Init according to BLE channel 37.
+        //releaseSem0();
         // Illegal channel in argument.
-        return FAIL_INVALID_PARAMETER;
+        //return FAIL_INVALID_PARAMETER;
         break;
     }
     releaseSem0();
@@ -260,10 +267,14 @@ unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char Adv
   
     /* BLE header and TXFIFO length paramter (required) */
     RFD = AdvDataLength + 13;       // FIFO entry length (Payload + BLE header + BLE length byte), (not transmitted).
+    
+    //Before transmitting the data below, the preamble and address (SYNC for the prop. protocol) are transmitted automatically. 
+    //Then, the Header of BLE and the total length of the remaining data (minus the CRC, which is transmitted automatically) are transmitted
+    //Finally, the CRC is transmitted automatically.
     RFD = 0x02;                     // BLE header ADV_NONCONN_IND PDU type (transmitted).
     RFD = AdvDataLength + 11;       // BLE length byte (transmitted).
   
-    /* Advertiser’s public or random device address (required) */
+    /* BLE: Advertiser’s public or random device address (required) */
     RFD = Address[0]; // Address (LSB)
     RFD = Address[1];
     RFD = Address[2];
@@ -273,12 +284,12 @@ unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char Adv
     
     /* AdvData/payload (required) */
 
-    // Flags.
+    // BLE: Flags.
     RFD = 0x02;     // Length of next Data (3  Byte).
     RFD = 0x01;     // Type flag.
     RFD = 0x04;     // BR/EDR Not Supported.
 
-    // Manufacturer Specific Data
+    // BLE: Manufacturer Specific Data
     RFD = AdvDataLength + 1;    // Length of next Data.
     RFD = 0xFF;                 // Type "Manufacturer Specific Data"
     

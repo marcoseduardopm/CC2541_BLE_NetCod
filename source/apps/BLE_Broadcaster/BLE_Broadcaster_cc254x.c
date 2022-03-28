@@ -73,9 +73,11 @@
 #include "hal_button.h"
 #include "hal_led.h"
 
-#define DEBUG 0
-#define MODETX 1
-#define DELAYTIME 60000 //for TX
+#define DEBUG 1
+#define MODETX 0
+#define DELAYTIME 5000 //60000 //for TX
+//#define CHANNEL BLE_BROADCAST_CHANNEL_37
+#define CHANNEL BLE_BROADCAST_CHANNEL_37 //randomly chosen
 #if(DEBUG)
   #include <stdio.h>
 #endif
@@ -875,9 +877,10 @@ unsigned char remoteRxMode(void) {
 
 
 
+int received_data[100];
+  
 void halRfLoadBLEBroadcastPacketPayload(uint8 print)
 {
-  int received_data[16];
   uint8 i;
   uint8 send_data_length = RFRXFLEN;
   if(print)
@@ -895,6 +898,8 @@ void halRfLoadBLEBroadcastPacketPayload(uint8 print)
 
   return;  
 }
+
+
 void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 {
   
@@ -994,7 +999,7 @@ void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
             halSleepDisableInterrupt();
 
             // CC2541/45 has automatic sync between 32 kHz ST and timer2.
-            halTimer2Start(1);
+            halTimer2Start(1);//halTimer2Start(1);
         }
         //  Due to the inaccuracy of the synchronizing between the sleep timer
         //  and timer 2 done above, the code will trim the timer2 current value
@@ -1029,14 +1034,16 @@ void justSend()
   Address[4] = 4;
   Address[5] = 5; // Address (MSB)  
   
-  unsigned char data[3];
-  data[0] = 0x11;
-  data[1] = 0x22;
-  data[2] = 0x33;
+  unsigned char data[5];
+  data[0] = 11;
+  data[1] = 22;
+  data[2] = 33;
+  data[3] = 44;
+  data[4] = 55;
   
   
   //obtainSem0();
-  halRfBroadcastLoadPacket(data, 3, Address);
+  halRfBroadcastLoadPacket(data, 5, Address);
   //releaseSem0();
     
   unsigned char L= RFTXFLEN;
@@ -1064,10 +1071,11 @@ void justSend()
     PRINTF("Tx Ok\n");
     
     //Turn the LED ON
+    ///*
     MCU_IO_OUTPUT(1, 2, 1);
     sleepMode(50, 0); //sleep 
     //Ensure that the P12 is at input (high impedance)
-    MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
+    MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);//*/
     
   } else {
     PRINTF("Tx NOk\n");
@@ -1087,13 +1095,37 @@ void justSend()
   
 }
 
+void txTest()
+{
+  halRfDisableRadio(FORCE);
 
+  //sleepMode(300000, 0); //sleep 60s before attempt to transmit
+  //sleepMode(60000, 0); //sleep 60s before attempt to transmit
+  //sleepMode(DELAYTIME, 0); //sleep 60s before attempt to transmit
+
+  //Put the LED at high impedance
+  MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
+
+  halRfEnableRadio();//= LLECTRL := 0x01
+  justSend();
+
+  // Reset TXFIFO to clear any remaining data in buffer.
+  halRfCommand(CMD_TXFIFO_RESET);
+  // Clear the global RFIRQF1 shadow variable (RF Interrupt flags).
+  rfirqf1 = 0;
+
+  //obtainSem0();
+  // Set to a undefined value in enum type end cause.
+  PRF.ENDCAUSE = TASK_UNDEF;
+        
+}
 /*******************************************************************************
 * @fn          main
 *
 * @brief       Main program
 *
 * @param       void
+
 *
 * @return      int (does not return)
 */
@@ -1116,7 +1148,7 @@ int main(void) {
     
     halRfDisableRadio(FORCE);
     halRfBroadcastInit();
-    halRfBroadcastSetChannel(BLE_BROADCAST_CHANNEL_37);
+    halRfBroadcastSetChannel(CHANNEL);
     
     
     ///
@@ -1159,7 +1191,7 @@ int main(void) {
       MCU_IO_INPUT(2, i, MCU_IO_PULLDOWN);
     }
 
-    sleepMode(3000, 0); //sleep 
+    sleepMode(1000, 0); //sleep 
     //Turn the LED ON
     MCU_IO_OUTPUT(1, 2, 1);
     sleepMode(200, 0); //sleep 
@@ -1176,7 +1208,7 @@ int main(void) {
         
         //sleepMode(300000, 0); //sleep 60s before attempt to transmit
         //sleepMode(60000, 0); //sleep 60s before attempt to transmit
-        sleepMode(DELAYTIME, 0); //sleep 60s before attempt to transmit
+        //sleepMode(DELAYTIME, 0); //sleep 60s before attempt to transmit
         
         //Put the LED at high impedance
         MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
@@ -1197,7 +1229,7 @@ int main(void) {
         
       //} else {
 #else
-
+///*
         // Start receiver.
         halRfStartRx();
 
@@ -1218,8 +1250,8 @@ int main(void) {
             PRINTF("Ok ");
             halRfLoadBLEBroadcastPacketPayload(1);
           } else if(RFIRQF1 & RFIRQF1_RXNOK) {
-            //PRINTF("NOk ");
-            //halRfLoadBLEBroadcastPacketPayload(1);          
+            PRINTF("NOk ");
+            halRfLoadBLEBroadcastPacketPayload(1);          
           } else {
             PRINTF("*");
           }        
@@ -1255,8 +1287,15 @@ int main(void) {
         PRF.ENDCAUSE = TASK_UNDEF;
         //releaseSem0();
         //
+        //sleepMode(40000, 0);
+        //*/
+        sleepMode(1000, 0);
+        txTest();
+        sleepMode(1000, 0);
+        halRfCommand(CMD_RXFIFO_RESET);
         
-        //sleepMode(4000, 0);
+        RFIRQF1 = 0; // Clear RF interrupts.
+        PRF.ENDCAUSE = TASK_UNDEF;
         
         // 4000 ms delay.
         //halMcuWaitMs(4000);
