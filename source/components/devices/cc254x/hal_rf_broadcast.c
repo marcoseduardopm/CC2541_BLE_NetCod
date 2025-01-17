@@ -45,8 +45,7 @@
 #include "string.h"
 #include "ioCC2541.h"
 #include "prop_regs.h"
-
-
+#include "BLE_Broadcaster_cc254x.h"
 
 void obtainSem0()
 {
@@ -111,9 +110,6 @@ void halRfBroadcastInit(void)
     PRF.PKT_CONF.START_TONE         = 0;    // No tone in front of packet.   
     releaseSem0();
     
-    
-    
-    
     obtainSem1();
     //Sem1
     PRF.FIFO_CONF.TX_ADDR_CONF      = 0;    // Read address from PRF.ADDR_ENTRY[0].ADDRESS.
@@ -123,23 +119,27 @@ void halRfBroadcastInit(void)
     PRF.FIFO_CONF.RX_STATUS_CONF    = 0;    // Don't append status information in FIFO
     PRF.FIFO_CONF.RX_ADDR_CONF      = 0;    // no Address byte in Rx FIFO
     
-    
     //Sem1
     PRF.ADDR_ENTRY[0].CONF.REUSE    = 0;    // Reuse packet on same adv event (same payload on all three if active broadcast channels.)
     PRF.ADDR_ENTRY[0].CONF.ENA0 = 1;        // Necessary, according to TI to receive BLE packets.
     PRF.ADDR_ENTRY[0].CONF.VARLEN = 0;           // 0: Use fixed length given by RXLENGTH in receiver when receiving packets or ACKs
-    PRF.ADDR_ENTRY[0].RXLENGTH = 18;        //16 //needs to be adjusted according to the packet we want to receive
- 
+    PRF.ADDR_ENTRY[0].RXLENGTH = PAYLOAD_LENGTH + 13;        //16 //needs to be adjusted according to the packet we want to receive
     
     //Sem1
     // Set 3 byte CRC.
+//    PRF_CRC_LEN = 0x03;
+//    PRF_CRC_INIT[0] = 0x00;
+//    PRF_CRC_INIT[1] = 0x55;
+//    PRF_CRC_INIT[2] = 0x55;
+//    PRF_CRC_INIT[3] = 0x55;
+    //PRF_CRC_INIT[3] = 0x56; //test wrong crc
+   
     PRF_CRC_LEN = 0x03;
     PRF_CRC_INIT[0] = 0x00;
     PRF_CRC_INIT[1] = 0x55;
     PRF_CRC_INIT[2] = 0x55;
     PRF_CRC_INIT[3] = 0x55;
-    //PRF_CRC_INIT[3] = 0x56; //test wrong crc
-   
+    
     releaseSem1();
     
     
@@ -179,6 +179,10 @@ void halRfBroadcastInit(void)
     SW1 = 0xBE;
     SW2 = 0x89;
     SW3 = 0x8E;
+//    SW0 = 0x01;
+//    SW1 = 0x23;
+//    SW2 = 0x45;
+//    SW3 = 0x67;
     
     
     // Enable PN7 whitener.
@@ -266,7 +270,6 @@ unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char Adv
     }
   
     /* BLE header and TXFIFO length paramter (required) */
-    //This length will not be transmitted
     RFD = AdvDataLength + 13;       // FIFO entry length (Payload + BLE header + BLE length byte), (not transmitted).
     
     //Before transmitting the data below, the preamble and address (SYNC for the prop. protocol) are transmitted automatically. 

@@ -320,7 +320,6 @@
                     <state>chip=2541</state>
                     <state>POWER_SAVING=1</state>
                     <state>LCD_EXCLUDE</state>
-                    <state>HAL_UART=TRUE</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -487,6 +486,7 @@
                     <state>$PROJ_DIR$\..\..\..\source\components\devices\cc254x</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\utils</state>
+                    <state>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -760,7 +760,7 @@
                 <debug>1</debug>
                 <option>
                     <name>XOutOverride</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OutputFile</name>

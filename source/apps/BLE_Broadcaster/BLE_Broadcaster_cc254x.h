@@ -70,4 +70,10 @@
 * 0x00000000.                                                                 */
 #define SYNCWORD 0x29417671
 
+/* User defines */
+#define PAYLOAD_LENGTH 5
+#define MODETX 0
+#define CHANNEL BLE_BROADCAST_CHANNEL_37
+#define TOTAL_TIME 3000
+
 #endif

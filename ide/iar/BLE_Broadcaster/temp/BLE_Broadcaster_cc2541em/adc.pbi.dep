@@ -1,6 +1,6 @@
 adc.pbi: \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\common\cc8051\adc.c \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\common\cc8051/adc.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\source\components\common\cc8051\adc.c \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\source\components\common\cc8051/adc.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h
