@@ -1,0 +1,25 @@
+per_test_cc254x.pbi: \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\per_test\per_test_cc254x.c \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\per_test/per_test_cc254x.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\devices\cc254x\prop_regs.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\devices\cc254x\hal_timer2.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\common\hal_types.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\devices\cc254x\hal_sleep.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\common\hal_defs.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_mcu.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\devices\cc254x/prop_regs.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\string.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib/sysmac.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_int.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\srf05_soc\hal_board.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\common\cc8051\hal_cc8051.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_button.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_led.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\per_test/per_test_cc254x_strings.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\per_test/per_test_cc254x_query.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_joystick.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\utils\util_lcd.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\targets\interface\hal_lcd.h \
+  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\utils/util.h

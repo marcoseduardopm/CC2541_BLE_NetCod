@@ -266,6 +266,7 @@ unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char Adv
     }
   
     /* BLE header and TXFIFO length paramter (required) */
+    //This length will not be transmitted
     RFD = AdvDataLength + 13;       // FIFO entry length (Payload + BLE header + BLE length byte), (not transmitted).
     
     //Before transmitting the data below, the preamble and address (SYNC for the prop. protocol) are transmitted automatically. 

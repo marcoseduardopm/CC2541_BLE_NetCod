@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.general.xcl" --backend -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.general.xcl" --backend -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.general.xcl" "--debug_file=%~1" --backend -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.general.xcl" "--debug_file=%~1" --backend -f "C:\Texas Instruments\CC2541_BLE_NetCod\ide\iar\per_test\settings\per_test_cc2541em.per_test_cc2541em.driver.xcl" 
 
 @echo off 
 :end
