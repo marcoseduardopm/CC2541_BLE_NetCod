@@ -71,9 +71,12 @@
 #define SYNCWORD 0x29417671
 
 /* User defines */
-#define PAYLOAD_LENGTH 5
+#define PAYLOAD_LENGTH 26
 #define MODETX 0
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
-#define TOTAL_TIME 3000
+#define TOTAL_TIME 1000
+#define ADDRESS_HIGH 0xBBBB
+#define ADDRESS_LOW 0xBBBBBBBB
+#define OTHERNUMBER 1
 
 #endif

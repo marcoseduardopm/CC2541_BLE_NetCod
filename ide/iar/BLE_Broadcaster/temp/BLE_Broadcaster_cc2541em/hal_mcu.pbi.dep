@@ -1,9 +1,9 @@
 hal_mcu.pbi: \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\source\components\devices\cc254x\hal_mcu.c \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\source\components\devices\cc254x/clock.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x\hal_mcu.c \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/clock.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_assert.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod_Git\source\components\devices\cc254x/power_mode.h
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_assert.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/power_mode.h

@@ -85,6 +85,17 @@
 extern volatile uint8 rfirqf1;
 extern uint8 RadioTimeoutFlag;
 
+struct deviceMap
+{
+  uint8 address[6];
+  int number;
+  uint8 sequenceNumber;
+  uint32 totalPackages;
+  uint32 packageLosses;
+};
+
+typedef struct deviceMap deviceMap;
+
 #if(DEBUG)
 #define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -102,15 +113,56 @@ uint8 powerModeFlag;
 uint16 counter = 0;
 uint8 ledStatus = 0;
 uint8 isTimeToTransmit = 0;
-uint8 otherNumberUpdated = 0;
-uint8 turnToSend = 0;
 uint16 randomTime;
 uint32 myNumber = 0;
-uint32 otherNumber = 0;
+
+deviceMap* deviceList;
+int numberOfDevices = 0;
 
 /*******************************************************************************
 * LOCAL FUNCTIONS
 */
+
+void IncludeDevice(uint8* add, int num, uint32 seq)
+{
+  deviceMap newDevice;
+  for(int i = 0; i < 6; i++)
+    newDevice.address[i] = add[i];
+  newDevice.number = num;
+  newDevice.sequenceNumber = seq;
+  newDevice.totalPackages = 1;
+  newDevice.packageLosses = 0;
+  
+  numberOfDevices++;
+  deviceList = realloc(deviceList, numberOfDevices*sizeof(deviceMap));
+  deviceList[numberOfDevices-1] = newDevice;
+}
+
+deviceMap* GetDeviceByNumber(int num)
+{
+  for(int i = 0; i < numberOfDevices; i++)
+  {
+    if(deviceList[i].number == num)
+      return &(deviceList[i]);
+  }
+  return NULL;
+}
+
+deviceMap* GetDeviceByAddress(uint8* add)
+{
+  for(int i = 0; i < numberOfDevices; i++)
+  {
+    uint8 isEqual = 1;
+    for(int j = 0; j < 6; j++)
+    {
+      if(deviceList[i].address[j] != add[j])
+        isEqual = 0;
+    }
+    if(isEqual)
+      return &(deviceList[i]);
+  }
+  return NULL;
+}
 
 void GetMessagePayload(uint8* outputAddress, uint8* outputData)
 {
@@ -132,7 +184,6 @@ void GetMessagePayload(uint8* outputAddress, uint8* outputData)
     PRINTF("EMPTY PACKAGE\n");
 }
   
-/*
 void halRfLoadBLEBroadcastPacketPayload(uint8 print)
 {
   uint8 i;
@@ -142,6 +193,7 @@ void halRfLoadBLEBroadcastPacketPayload(uint8 print)
   //Number of bytes effective data
   //send_data_length = (sizeof(data_to_send)/sizeof(int));
 
+  uint8* received_data = malloc(send_data_length);
   //Read data from FIFO
   for(i=0;i<send_data_length;i++){
     //received_data[i] = RFD;
@@ -150,9 +202,9 @@ void halRfLoadBLEBroadcastPacketPayload(uint8 print)
   }
   PRINTF("\n");
 
+  free(received_data);
   return;  
 }
-*/
 
 void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 {
@@ -257,48 +309,54 @@ void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 #endif
 }
 
-void Transmit(uint32 address, uint32 number)
+void Transmit(uint8 messageType, uint8 sequenceNumber, uint8 partnerNumber, uint8 partnerSequenceNumber, uint8* message)
 {
-  uint8* payload = (uint8*)malloc(PAYLOAD_LENGTH);
+  rfirqf1 = 0;
+  
+  uint8 payload[PAYLOAD_LENGTH];
   
   for(int i = 0;i< PAYLOAD_LENGTH; i++)    
     payload[i] = 0;
   
-  if(PAYLOAD_LENGTH >= 4)
+  payload[0] = messageType;
+  payload[1] = sequenceNumber;
+  payload[2] = partnerNumber;
+  payload[3] = partnerSequenceNumber;
+  
+  for(int i = 4; i < PAYLOAD_LENGTH; i++)
   {
-    payload[PAYLOAD_LENGTH - 1] = number & 0xFF;
-    payload[PAYLOAD_LENGTH - 2] = (number >> 8) & 0xFF;
-    payload[PAYLOAD_LENGTH - 3] = (number >> 16) & 0xFF;
-    payload[PAYLOAD_LENGTH - 4] = (number >> 24) & 0xFF;
+    payload[i] = message[i-4];
   }
   
-  halRfCommand(CMD_SHUTDOWN);
-  while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
-  
-  rfirqf1 = 0;
-  
   unsigned char addressBytes[6];
-  addressBytes[0] = address & 0xFF; // Address (LSB)
-  addressBytes[1] = (address >> 8) & 0xFF;
-  addressBytes[2] = (address >> 16) & 0xFF;
-  addressBytes[3] = (address >> 24) & 0xFF;
-  addressBytes[4] = 0;
-  addressBytes[5] = 0; // Address (MSB)  
+  addressBytes[0] = ADDRESS_LOW & 0xFF; // Address (LSB)
+  addressBytes[1] = (ADDRESS_LOW >> 8) & 0xFF;
+  addressBytes[2] = (ADDRESS_LOW >> 16) & 0xFF;
+  addressBytes[3] = (ADDRESS_LOW >> 24) & 0xFF;
+  addressBytes[4] = ADDRESS_HIGH & 0xFF;
+  addressBytes[5] = (ADDRESS_HIGH >> 8) & 0xFF; // Address (MSB)  
   
   //obtainSem0();
   halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);
   //releaseSem0();
   
   // Start transmitter.
-  while(RFST != 0);
-  RFST = CMD_TX;
+  //while(RFST != 0);
+  //RFST = CMD_TX;
+  if(RFST != 0)
+  {
+    halRfCommand(CMD_SHUTDOWN);
+    while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
+    rfirqf1 = 0;
+  }
+  halRfStartTx();
   
   // Wait for TASKDONE and halt CPU (PM0) until task is completed.
   while (!( rfirqf1 & RFIRQF1_TASKDONE)) {}     
 
   // If data received read FIFO   
   if(PRF.ENDCAUSE == TASK_ENDOK)    
-  {        
+  {    
     //Get packet data.
     //halRfLoadBLEBroadcastPacketPayload();
     //PRINTF("Tx Ok\n");
@@ -309,8 +367,7 @@ void Transmit(uint32 address, uint32 number)
     PRINTF("Tx NOk\n");
   }  
   halRfCommand(CMD_TXFIFO_RESET);
-  
-  free(payload);
+
   rfirqf1 = 0;  
 }
 
@@ -320,47 +377,95 @@ void Receive()
   if(PRF.ENDCAUSE == TASK_ENDOK)    
   {
     if(rfirqf1 & RFIRQF1_RXOK) {
-      
       uint8 addressBytes[6];     
       uint8 payload[PAYLOAD_LENGTH];
       GetMessagePayload(addressBytes,payload);
+    
+      uint8 messageType = payload[0];
+      uint8 sequenceNumber = payload[1];
+      uint8 partnerNumber = payload[2];
+      uint8 partnerSequenceNumber = payload[3];
       
-      uint32 partial;
-      
-      uint32 receivedAddress = 0;
-      partial = addressBytes[0];
-      receivedAddress |= partial;
-      partial = addressBytes[1];
-      receivedAddress |= partial << 8;
-      partial = addressBytes[2];
-      receivedAddress |= partial << 16;
-      partial = addressBytes[3];
-      receivedAddress |= partial << 24;
-      
-      uint32 receivedData = 0;
-      partial = payload[PAYLOAD_LENGTH - 1];
-      receivedData |= partial;
-      partial = payload[PAYLOAD_LENGTH - 2];
-      receivedData |= partial << 8;
-      partial = payload[PAYLOAD_LENGTH - 3];
-      receivedData |= partial << 16;
-      partial = payload[PAYLOAD_LENGTH - 4];
-      receivedData |= partial << 24;
-      
-      //PRINTF("ADDRESS: %u\n", (unsigned int)receivedAddress);
-      
-      if(receivedAddress == (uint32)0xABAB)
+      uint8 message[PAYLOAD_LENGTH-4];
+      for(int i = 4; i < PAYLOAD_LENGTH; i++)
       {
-        PRINTF("My number came back: %u\n", (unsigned int)receivedData);
+        message[i-4] = payload[i];
       }
-      else
+      
+#if(MODETX)
+      if(messageType == 0) // message from the sender itself
       {
-        otherNumber = receivedData;
-        otherNumberUpdated = 1;
-        //PRINTF("Other device number: %u\n", (unsigned int)otherNumber);
+        PRINTF("R\n");
+        Transmit(1,0,OTHERNUMBER,sequenceNumber,message);
       }
-        
+#else
+      deviceMap* device;
+      if(messageType == 0)
+      {
+        device = GetDeviceByAddress(addressBytes);
+        if(!device)
+          IncludeDevice(addressBytes,numberOfDevices+1,sequenceNumber);
+        else
+        {
+          if(sequenceNumber != device->sequenceNumber+1)
+          {
+            int diff = sequenceNumber - (device->sequenceNumber+1);
+            if(diff > 0)
+            {
+              device->totalPackages = device->totalPackages + diff;
+              device->packageLosses = device->packageLosses + diff;
+              PRINTF("%x %lu %lu\n", device->address[0], (unsigned long)device->packageLosses, (unsigned long)device->totalPackages);
+            }
+            else if(diff < 0)
+            {
+              device->packageLosses = 0;
+              device->totalPackages = 1;
+              device->sequenceNumber = sequenceNumber;
+              PRINTF("%x RENEW\n", device->address[0]);
+            }
+          }
+          else
+          {
+            device->totalPackages = device->totalPackages + 1;
+          }
+          device->sequenceNumber = sequenceNumber;
+          //PRINTF("OWN - %x - %d\n", addressBytes[0], sequenceNumber);
+        }
+      }
+      else if(messageType == 1 || messageType == 2)
+      {
+        device = GetDeviceByNumber(partnerNumber);
+        if(!device)
+          IncludeDevice(addressBytes,numberOfDevices+1,partnerSequenceNumber);
+        else
+        {
+          if(partnerSequenceNumber != device->sequenceNumber+1)
+          {
+            int diff = partnerSequenceNumber - (device->sequenceNumber+1);
+            if(diff > 0)
+            {
+              device->totalPackages = device->totalPackages + diff;
+              device->packageLosses = device->packageLosses + diff;
+              PRINTF("%x %lu %lu\n", device->address[0], (unsigned long)device->packageLosses, (unsigned long)device->totalPackages);
+            }
+            else if(diff < 0)
+            {
+              device->packageLosses = 0;
+              device->totalPackages = 1;
+              device->sequenceNumber = partnerSequenceNumber;
+              PRINTF("%x RENEW\n", device->address[0]);
+            }
+          }
+          else
+          {
+            device->totalPackages = device->totalPackages + 1;
+          }
+          device->sequenceNumber = partnerSequenceNumber;
+          //PRINTF("OTHER - %x - %d\n", addressBytes[0], partnerSequenceNumber);
+        }
+      }
       //halRfLoadBLEBroadcastPacketPayload(1);
+#endif
     } else if(rfirqf1 & RFIRQF1_RXNOK) {
       //PRINTF("NOk ");
       //halRfLoadBLEBroadcastPacketPayload(1);          
@@ -391,7 +496,8 @@ void TurnLED(uint8 led)
 }
 
 // Timer 1 Interrupt routine (every 1 ms)
-HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR) {
+HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR) 
+{
   if(counter == randomTime) // Set boolean to start transmit function
   {
     isTimeToTransmit = 1;
@@ -471,7 +577,7 @@ int main(void) {
     TurnLED(0);
     
     halRfEnableInterrupt(RFIRQF1_TASKDONE);
-    
+#if(MODETX)
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
     
@@ -485,35 +591,14 @@ int main(void) {
 
     while(1)  
     {
-      rfirqf1 = 0;     
+      rfirqf1 = 0;
    
       if(isTimeToTransmit)
-      {
+      {        
+        char exampleMessage[22] = "MENSAGEM EXEMPLO";
         isTimeToTransmit = 0;
-        turnToSend = !turnToSend;
-        if(turnToSend)
-        {
-          //PRINTF("Sending my number\n");
-          uint32 addr = 0xAAAA;
-          Transmit(addr,myNumber);
-          myNumber++;
-        }
-        else 
-        {
-          if(otherNumberUpdated)
-          {
-            //PRINTF("Sending Other device`s number\n");
-            uint32 addr = 0xABAB;
-            Transmit(addr,otherNumber);
-            otherNumberUpdated = 0;
-          }
-          else
-          {
-            //PRINTF("Sending my number again\n");
-            uint32 addr = 0xAAAA;
-            Transmit(addr,myNumber);
-          }
-        }
+        Transmit(0,myNumber,0,0,(uint8*)exampleMessage);
+        myNumber++;
       }
       else
       {
@@ -521,9 +606,17 @@ int main(void) {
         halRfStartRx();
         // Wait for TASKDONE and halt CPU (PM0) until task is completed.
         while ((!(rfirqf1 & RFIRQF1_TASKDONE)) && !(isTimeToTransmit)) {}  
-        
-        if(!isTimeToTransmit)
-          Receive(); 
+       
+        if(isTimeToTransmit)
+        {
+          rfirqf1 = 0;
+          halRfCommand(CMD_SHUTDOWN);
+          while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
+        }
+        else
+        {
+          Receive();
+        }
       }
       
       rfirqf1 = 0; // Clear RF interrupts.
@@ -532,4 +625,27 @@ int main(void) {
       PRF.ENDCAUSE = TASK_UNDEF;
       releaseSem0();
     }
+#else
+    uint8 address1[6] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
+    uint8 address2[6] = {0xBB,0xBB,0xBB,0xBB,0xBB,0xBB};
+    IncludeDevice(address1,1,0);
+    IncludeDevice(address2,2,0);
+    while(1)  
+    {
+      rfirqf1 = 0; 
+
+      // Start receiver.
+      halRfStartRx();
+      // Wait for TASKDONE and halt CPU (PM0) until task is completed.
+      while ((!(rfirqf1 & RFIRQF1_TASKDONE)) && !(isTimeToTransmit)) {}  
+      
+      Receive();
+      
+      rfirqf1 = 0;
+      
+      obtainSem0();
+      PRF.ENDCAUSE = TASK_UNDEF;
+      releaseSem0();
+    }
+#endif
 }
