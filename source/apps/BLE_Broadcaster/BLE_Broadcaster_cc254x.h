@@ -37,23 +37,36 @@
 *
 *******************************************************************************/
 
+#include "hal_types.h"
+
 #ifndef _PER_TEST_CC254x_H
 #define _PER_TEST_CC254x_H
 /*******************************************************************************
 * DEFINES
 */
 // Mode.
-#define REMOTE 0      // Remote Mode.
-#define MASTER 1      // Master Mode.
+//#define REMOTE 0      // Remote Mode.
+//#define MASTER 1      // Master Mode.
 
 // Ack commands.
-#define ACK_COMMAND_RESTART   1
-#define ACK_COMMAND_REPEAT    2
-#define ACK_COMMAND_STOP      3
+//#define ACK_COMMAND_RESTART   1
+//#define ACK_COMMAND_REPEAT    2
+//#define ACK_COMMAND_STOP      3
 
 // Function return statements.
-#define RUN_SUCCESS           0
-#define RUN_ERROR             9
+//#define RUN_SUCCESS           0
+//#define RUN_ERROR             9
+
+struct deviceMap
+{
+  uint8 address[6];
+  int number;
+  uint8 sequenceNumber;
+  uint32 totalPackages;
+  uint32 packageLosses;
+};
+
+typedef struct deviceMap deviceMap;
 
 /*
 * Use the same sync word that is used in SmartRFStudio.
@@ -70,13 +83,21 @@
 * 0x00000000.                                                                 */
 #define SYNCWORD 0x29417671
 
-/* User defines */
 #define PAYLOAD_LENGTH 26
-#define MODETX 0
+#define MODETX
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
 #define TOTAL_TIME 1000
-#define ADDRESS_HIGH 0xBBBB
-#define ADDRESS_LOW 0xBBBBBBBB
-#define OTHERNUMBER 1
+
+#define OPERATION_MODE DAF
+#define TOTAL_NODES 2
+
+#ifdef MODETX
+#define NODE_NUMBER 0
+#endif
+
+extern volatile uint8 rfirqf1;
+extern deviceMap deviceList[3];
+extern uint8 addressBytes[6];
+extern uint8 messages[3][PAYLOAD_LENGTH-1];
 
 #endif

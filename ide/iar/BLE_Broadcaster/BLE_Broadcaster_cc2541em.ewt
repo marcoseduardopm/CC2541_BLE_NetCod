@@ -1086,6 +1086,24 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.h</name>
+        </file>
     </group>
     <group>
         <name>common</name>

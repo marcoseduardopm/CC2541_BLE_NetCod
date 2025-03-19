@@ -72,6 +72,7 @@
 #include "hal_board.h"
 #include "hal_button.h"
 #include "hal_led.h"
+#include "NodeFunctions.h"
 #include <stdlib.h>
 
 #define DEBUG 1
@@ -82,19 +83,8 @@
 #endif
 
 // Global flags.
-extern volatile uint8 rfirqf1;
+volatile uint8 rfirqf1 = 0;
 extern uint8 RadioTimeoutFlag;
-
-struct deviceMap
-{
-  uint8 address[6];
-  int number;
-  uint8 sequenceNumber;
-  uint32 totalPackages;
-  uint32 packageLosses;
-};
-
-typedef struct deviceMap deviceMap;
 
 #if(DEBUG)
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -109,35 +99,53 @@ uint8 powerModeFlag;
 /*******************************************************************************
 * GLOBAL VARIABLES
 */
-
 uint16 counter = 0;
 uint8 ledStatus = 0;
-uint8 isTimeToTransmit = 0;
-uint16 randomTime;
-uint32 myNumber = 0;
+uint8 transmissionDone = 0;
 
-deviceMap* deviceList;
-int numberOfDevices = 0;
+uint8 myNumber = 0;
+uint8 addressBytes[6];
+uint8 messages[3][PAYLOAD_LENGTH-1];
+
+uint8 timePhase = 0;
+
+deviceMap deviceList[3];
 
 /*******************************************************************************
 * LOCAL FUNCTIONS
 */
 
-void IncludeDevice(uint8* add, int num, uint32 seq)
+void IncludeDevices()
 {
-  deviceMap newDevice;
-  for(int i = 0; i < 6; i++)
-    newDevice.address[i] = add[i];
-  newDevice.number = num;
-  newDevice.sequenceNumber = seq;
-  newDevice.totalPackages = 1;
-  newDevice.packageLosses = 0;
+  deviceMap nodeA, nodeB, nodeC;
   
-  numberOfDevices++;
-  deviceList = realloc(deviceList, numberOfDevices*sizeof(deviceMap));
-  deviceList[numberOfDevices-1] = newDevice;
+  for(int i = 0; i < 6; i++)
+    nodeA.address[i] = 0xAA;
+  nodeA.number = 0;
+  nodeA.sequenceNumber = 0;
+  nodeA.totalPackages = 0;
+  nodeA.packageLosses = 0;
+  
+  for(int i = 0; i < 6; i++)
+    nodeB.address[i] = 0xBB;
+  nodeB.number = 1;
+  nodeB.sequenceNumber = 0;
+  nodeB.totalPackages = 0;
+  nodeB.packageLosses = 0;
+  
+  for(int i = 0; i < 6; i++)
+    nodeC.address[i] = 0xCC;
+  nodeC.number = 2;
+  nodeC.sequenceNumber = 0;
+  nodeC.totalPackages = 0;
+  nodeC.packageLosses = 0;
+
+  deviceList[0] = nodeA;
+  deviceList[1] = nodeB;
+  deviceList[2] = nodeC;
 }
 
+/*
 deviceMap* GetDeviceByNumber(int num)
 {
   for(int i = 0; i < numberOfDevices; i++)
@@ -162,8 +170,9 @@ deviceMap* GetDeviceByAddress(uint8* add)
       return &(deviceList[i]);
   }
   return NULL;
-}
+}*/
 
+/*
 void GetMessagePayload(uint8* outputAddress, uint8* outputData)
 {
   if(RFRXFLEN > PAYLOAD_LENGTH)
@@ -182,6 +191,16 @@ void GetMessagePayload(uint8* outputAddress, uint8* outputData)
   }
   else
     PRINTF("EMPTY PACKAGE\n");
+}
+*/
+
+void clearMessages()
+{
+  for(int i = 0; i < 3; i ++)
+  {
+    for(int j = 0; j < PAYLOAD_LENGTH; j++)
+      messages[i][j] = 0;
+  }
 }
   
 void halRfLoadBLEBroadcastPacketPayload(uint8 print)
@@ -309,6 +328,7 @@ void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 #endif
 }
 
+/*
 void Transmit(uint8 messageType, uint8 sequenceNumber, uint8 partnerNumber, uint8 partnerSequenceNumber, uint8* message)
 {
   rfirqf1 = 0;
@@ -337,7 +357,7 @@ void Transmit(uint8 messageType, uint8 sequenceNumber, uint8 partnerNumber, uint
   addressBytes[5] = (ADDRESS_HIGH >> 8) & 0xFF; // Address (MSB)  
   
   //obtainSem0();
-  halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);
+  //halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);
   //releaseSem0();
   
   // Start transmitter.
@@ -370,7 +390,9 @@ void Transmit(uint8 messageType, uint8 sequenceNumber, uint8 partnerNumber, uint
 
   rfirqf1 = 0;  
 }
+*/
 
+/*
 void Receive()
 {
   // If data received read FIFO   
@@ -392,11 +414,11 @@ void Receive()
         message[i-4] = payload[i];
       }
       
-#if(MODETX)
+#ifdef MODETX
       if(messageType == 0) // message from the sender itself
       {
         PRINTF("R\n");
-        Transmit(1,0,OTHERNUMBER,sequenceNumber,message);
+        //Transmit(1,0,OTHERNUMBER,sequenceNumber,message);
       }
 #else
       deviceMap* device;
@@ -486,6 +508,7 @@ void Receive()
   }
   halRfCommand(CMD_RXFIFO_RESET);
 }
+*/
 
 void TurnLED(uint8 led)
 {
@@ -498,20 +521,31 @@ void TurnLED(uint8 led)
 // Timer 1 Interrupt routine (every 1 ms)
 HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR) 
 {
-  if(counter == randomTime) // Set boolean to start transmit function
+  counter++;
+  if(counter >= TOTAL_TIME)
   {
-    isTimeToTransmit = 1;
-  }
-  else if(counter > TOTAL_TIME)
-  {
+#if TOTAL_NODES == 2
+    int timeSlices = 4;
+#elif TOTAL_NODES == 3
+    int timeSlices = 9;
+#endif
     ledStatus = !ledStatus;
     TurnLED(ledStatus);
-    randomTime = rand() % TOTAL_TIME; // New random time to transmit
     counter = 0;
-    isTimeToTransmit = 0;
+    timePhase = (timePhase+1);
+    if(timePhase >= timeSlices)
+    {
+      timePhase = 0;
+      transmissionDone = 1;
+    }
+    if(RFST != 0)
+    {
+      halRfCommand(CMD_SHUTDOWN);
+      while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
+      rfirqf1 = 0;
+    }
   }
   IRCON &= 0xFD; // Clean interrupt flag
-  counter++;
   return;
 }
 
@@ -577,59 +611,38 @@ int main(void) {
     TurnLED(0);
     
     halRfEnableInterrupt(RFIRQF1_TASKDONE);
-#if(MODETX)
+    
+    IncludeDevices();
+    
+    for(int i = 0; i < 6; i++)
+      addressBytes[i] = deviceList[NODE_NUMBER].address[i];
+    
+#ifdef MODETX
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
-    
-    //Get Timer2 current time for seed initialization
-    uint16 fine;
-    uint32 coarse;
-    halTimer2GetFullCurrentTime(&fine, &coarse);
-    srand(coarse); //Random seed initialization
-    
-    randomTime = rand() % TOTAL_TIME; //Random initial time to transmit
 
     while(1)  
     {
-      rfirqf1 = 0;
-   
-      if(isTimeToTransmit)
-      {        
-        char exampleMessage[22] = "MENSAGEM EXEMPLO";
-        isTimeToTransmit = 0;
-        Transmit(0,myNumber,0,0,(uint8*)exampleMessage);
-        myNumber++;
-      }
-      else
+      
+      NodeSetup(myNumber);
+      
+      while(!transmissionDone)
       {
-        // Start receiver.
-        halRfStartRx();
-        // Wait for TASKDONE and halt CPU (PM0) until task is completed.
-        while ((!(rfirqf1 & RFIRQF1_TASKDONE)) && !(isTimeToTransmit)) {}  
-       
-        if(isTimeToTransmit)
-        {
-          rfirqf1 = 0;
-          halRfCommand(CMD_SHUTDOWN);
-          while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
-        }
-        else
-        {
-          Receive();
-        }
+        
+        NodeRun(timePhase, myNumber);
+      
+        obtainSem0();
+        PRF.ENDCAUSE = TASK_UNDEF;
+        releaseSem0();
       }
+      NodeClean();
+      clearMessages();
+      transmissionDone = 0;
       
-      rfirqf1 = 0; // Clear RF interrupts.
-      
-      obtainSem0();
-      PRF.ENDCAUSE = TASK_UNDEF;
-      releaseSem0();
     }
+    
 #else
-    uint8 address1[6] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
-    uint8 address2[6] = {0xBB,0xBB,0xBB,0xBB,0xBB,0xBB};
-    IncludeDevice(address1,1,0);
-    IncludeDevice(address2,2,0);
+    
     while(1)  
     {
       rfirqf1 = 0; 
@@ -637,7 +650,7 @@ int main(void) {
       // Start receiver.
       halRfStartRx();
       // Wait for TASKDONE and halt CPU (PM0) until task is completed.
-      while ((!(rfirqf1 & RFIRQF1_TASKDONE)) && !(isTimeToTransmit)) {}  
+      while (!(rfirqf1 & RFIRQF1_TASKDONE)) {}  
       
       Receive();
       
@@ -647,5 +660,6 @@ int main(void) {
       PRF.ENDCAUSE = TASK_UNDEF;
       releaseSem0();
     }
+    
 #endif
 }
