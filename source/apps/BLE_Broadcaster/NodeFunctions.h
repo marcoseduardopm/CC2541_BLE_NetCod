@@ -4,8 +4,7 @@
 #ifndef _NODE_FUNCTIONS_H
 #define _NODE_FUNCTIONS_H
 
-void NodeSetup(uint32 myNumber);
-void NodeRun(uint8 phase, uint32 myNumber);
-void NodeClean();
+void NodeSetup();
+void NodeRun();
 
 #endif

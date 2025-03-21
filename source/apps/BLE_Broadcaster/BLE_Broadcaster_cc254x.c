@@ -73,6 +73,8 @@
 #include "hal_button.h"
 #include "hal_led.h"
 #include "NodeFunctions.h"
+#include "DestinyFunctions.h"
+#include "CommonFunctions.h"
 #include <stdlib.h>
 
 #define DEBUG 1
@@ -102,14 +104,24 @@ uint8 powerModeFlag;
 uint16 counter = 0;
 uint8 ledStatus = 0;
 uint8 transmissionDone = 0;
+uint8 actedThisPhase = 0;
 
 uint8 myNumber = 0;
+uint8 phase = 0;
+
 uint8 addressBytes[6];
 uint8 messages[3][PAYLOAD_LENGTH-1];
-
-uint8 timePhase = 0;
+uint8 messagesFlags[3];
 
 deviceMap deviceList[3];
+
+#if TOTAL_NODES == 2
+  uint8 codingMatrix[2][4];
+  uint8 resultMatrix[PAYLOAD_LENGTH-1][4];
+#elif TOTAL_NODES == 3
+  uint8 codingMatrix[3][9];
+  uint8 resultMatrix[PAYLOAD_LENGTH-1][9];
+#endif
 
 /*******************************************************************************
 * LOCAL FUNCTIONS
@@ -194,30 +206,36 @@ void GetMessagePayload(uint8* outputAddress, uint8* outputData)
 }
 */
 
-void clearMessages()
+void ClearMessages()
 {
   for(int i = 0; i < 3; i ++)
   {
-    for(int j = 0; j < PAYLOAD_LENGTH; j++)
+    for(int j = 0; j < PAYLOAD_LENGTH - 1; j++)
       messages[i][j] = 0;
   }
+  for(int i = 0; i < PAYLOAD_LENGTH-1; i++)
+  {
+    for (int j = 0; j < 4; j++)
+      resultMatrix[i][j] = 0;
+  }
+  for(int i = 0; i < 3; i ++)
+    messagesFlags[i] = 0;
 }
   
-void halRfLoadBLEBroadcastPacketPayload(uint8 print)
+void halRfLoadBLEBroadcastPacketPayload()
 {
   uint8 i;
   uint8 send_data_length = RFRXFLEN;
-  if(print)
-    PRINTF("%d: ", send_data_length);
+  PRINTF("%d: ", send_data_length);
   //Number of bytes effective data
   //send_data_length = (sizeof(data_to_send)/sizeof(int));
 
   uint8* received_data = malloc(send_data_length);
   //Read data from FIFO
   for(i=0;i<send_data_length;i++){
-    //received_data[i] = RFD;
+    received_data[i] = RFD;
     //if(print)
-      //PRINTF("%d ", received_data[i]);
+      PRINTF("%d ", received_data[i]);
   }
   PRINTF("\n");
 
@@ -510,6 +528,41 @@ void Receive()
 }
 */
 
+uint8 ReceiveInitSignal()
+{
+  rfirqf1 = 0;  
+  halRfStartRx();
+  
+  while (!(rfirqf1 & RFIRQF1_TASKDONE)) {}  
+  
+  // If data received read FIFO   
+  if(PRF.ENDCAUSE == TASK_ENDOK)    
+  {
+    if(rfirqf1 & RFIRQF1_RXOK) {
+      
+      uint8 addressBytes[6];     
+      uint8 payload[PAYLOAD_LENGTH];
+      
+      GetMessagePayload(addressBytes,payload);
+      uint8 messageType = payload[0];
+      
+      if(messageType == 255)
+      {
+        phase = 0;
+        myNumber = 0;
+        transmissionDone = 1;
+        halRfCommand(CMD_RXFIFO_RESET);
+        rfirqf1 = 0;
+        return 1;
+      }
+    }
+  }
+  
+  halRfCommand(CMD_RXFIFO_RESET);
+  rfirqf1 = 0;
+  return 0;
+}
+
 void TurnLED(uint8 led)
 {
   if(led)
@@ -532,10 +585,11 @@ HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR)
     ledStatus = !ledStatus;
     TurnLED(ledStatus);
     counter = 0;
-    timePhase = (timePhase+1);
-    if(timePhase >= timeSlices)
+    actedThisPhase = 0;
+    phase = (phase+1);
+    if(phase >= timeSlices)
     {
-      timePhase = 0;
+      phase = 0;
       transmissionDone = 1;
     }
     if(RFST != 0)
@@ -612,53 +666,60 @@ int main(void) {
     
     halRfEnableInterrupt(RFIRQF1_TASKDONE);
     
-    IncludeDevices();
-    
+#ifdef MODETX
+
     for(int i = 0; i < 6; i++)
       addressBytes[i] = deviceList[NODE_NUMBER].address[i];
     
-#ifdef MODETX
+    while(!ReceiveInitSignal()) {}
+    
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
-
+    
     while(1)  
     {
       
-      NodeSetup(myNumber);
+      NodeSetup();
       
       while(!transmissionDone)
       {
         
-        NodeRun(timePhase, myNumber);
-      
-        obtainSem0();
-        PRF.ENDCAUSE = TASK_UNDEF;
-        releaseSem0();
+        NodeRun();
+
       }
-      NodeClean();
-      clearMessages();
+      
+      myNumber++;
+      ClearMessages();
       transmissionDone = 0;
       
     }
     
 #else
     
+    //Set Timer 1 to interrupt every 1 ms
+    ConfigureTimer();
+    
+    IncludeDevices();
+    
+    uint8* startMessage = malloc(PAYLOAD_LENGTH-1*sizeof(uint8));
+    Transmit(255,startMessage);
+    free(startMessage);
+    
     while(1)  
     {
-      rfirqf1 = 0; 
-
-      // Start receiver.
-      halRfStartRx();
-      // Wait for TASKDONE and halt CPU (PM0) until task is completed.
-      while (!(rfirqf1 & RFIRQF1_TASKDONE)) {}  
       
-      Receive();
+      DestinySetup();
       
-      rfirqf1 = 0;
+      while(!transmissionDone)
+      {
+        
+        DestinyRun();
       
-      obtainSem0();
-      PRF.ENDCAUSE = TASK_UNDEF;
-      releaseSem0();
+      }
+      
+      ClearMessages();
+      transmissionDone = 0;
+      
     }
     
 #endif
