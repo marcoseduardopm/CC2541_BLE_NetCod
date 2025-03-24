@@ -550,7 +550,6 @@ uint8 ReceiveInitSignal()
       {
         phase = 0;
         myNumber = 0;
-        transmissionDone = 1;
         halRfCommand(CMD_RXFIFO_RESET);
         rfirqf1 = 0;
         return 1;
@@ -626,7 +625,7 @@ int main(void) {
 
     // Clear the global RFIRQF1 shadow variable (RF Interrupt flags).
     rfirqf1 = 0;
-
+ 
     //Ensure that the P12 is at input (high impedance)
     MCU_IO_INPUT(1, 2, MCU_IO_PULLDOWN);
     
@@ -668,10 +667,22 @@ int main(void) {
     
 #ifdef MODETX
 
+#if NODE_NUMBER == 0
+    uint32 randomTime = TOTAL_TIME/2;
+#elif NODE_NUMBER == 1
+    uint32 randomTime = TOTAL_TIME/3;
+#elif NODE_NUMBER == 2
+    uint32 randomTime = TOTAL_TIME/6;
+#endif
+
     for(int i = 0; i < 6; i++)
       addressBytes[i] = deviceList[NODE_NUMBER].address[i];
     
     while(!ReceiveInitSignal()) {}
+    
+    sleepMode(randomTime, 0);
+    
+    ClearMessages();
     
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
@@ -696,14 +707,16 @@ int main(void) {
     
 #else
     
-    //Set Timer 1 to interrupt every 1 ms
-    ConfigureTimer();
-    
     IncludeDevices();
     
     uint8* startMessage = malloc(PAYLOAD_LENGTH-1*sizeof(uint8));
     Transmit(255,startMessage);
     free(startMessage);
+    
+    //sleepMode(TOTAL_TIME, 0);
+    
+    //Set Timer 1 to interrupt every 1 ms
+    ConfigureTimer();
     
     while(1)  
     {
@@ -717,6 +730,7 @@ int main(void) {
       
       }
       
+      //PrintMatrix(PAYLOAD_LENGTH-1,4);
       ClearMessages();
       transmissionDone = 0;
       

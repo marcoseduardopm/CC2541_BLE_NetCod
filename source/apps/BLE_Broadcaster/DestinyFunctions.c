@@ -119,7 +119,6 @@ void DAF2()
     break;
   case 3:
     Receive();
-    //PrintMatrix(PAYLOAD_LENGTH-1,4);
     break;
   }
 }

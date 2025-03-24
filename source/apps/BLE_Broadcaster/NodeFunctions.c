@@ -92,27 +92,14 @@ uint8* GetMatrixColumn( int matrixLines, int columnNumber)
 void DAF2()
 {
   uint8* column;
-  switch(phase)
-  {
-  case 0:
 #if NODE_NUMBER == 0
-    Transmit(0,messages[NODE_NUMBER]);
-    Receive();
-#elif NODE_NUMBER == 1
-    Receive();
-#endif
-    break;
-  case 1:
-#if NODE_NUMBER == 0
-    Receive();
-#elif NODE_NUMBER == 1
-    Transmit(1,messages[NODE_NUMBER]);
-    Receive();
-#endif
-    break;
-  case 2:
-#if NODE_NUMBER == 0
-    if(messagesFlags[1])
+ if(phase == 0)
+ {
+  Transmit(0,messages[0]);
+ }
+ else if(phase == 2)
+ {
+   if(messagesFlags[1])
     {
       MultiplyMatrix(2,PAYLOAD_LENGTH - 1,2,4);
       column = GetMatrixColumn(PAYLOAD_LENGTH - 1,2);
@@ -120,29 +107,30 @@ void DAF2()
       free(column);
     }
     else
-      Transmit(0,messages[NODE_NUMBER]);
-    Receive();
-#elif NODE_NUMBER == 1
-    Receive();
-#endif
-    break;
-  case 3:
-#if NODE_NUMBER == 0
-    Receive();
-#elif NODE_NUMBER == 1
-    if(messagesFlags[0])
     {
-      MultiplyMatrix(2,PAYLOAD_LENGTH - 1,2,4);
-      column = GetMatrixColumn(PAYLOAD_LENGTH - 1,3);
-      Transmit(11,column);
-      free(column);
+      Transmit(0,messages[NODE_NUMBER]);
     }
-    else
-      Transmit(1,messages[NODE_NUMBER]);
-    Receive();
+ }
+#elif NODE_NUMBER == 1
+   if(phase == 1)
+   {
+    Transmit(1,messages[1]);
+   }
+   else if(phase == 3)
+   {
+     if(messagesFlags[0])
+      {
+        MultiplyMatrix(2,PAYLOAD_LENGTH - 1,2,4);
+        column = GetMatrixColumn(PAYLOAD_LENGTH - 1,3);
+        Transmit(11,column);
+        free(column);
+      }
+      else
+      {
+        Transmit(1,messages[1]);
+      }
+   }
 #endif
-    break;
-  }
 }
 
 void NodeSetup()
