@@ -40,19 +40,71 @@ void Receive()
       {
         message[i-1] = payload[i];
       }
-      
-      if(messageType <= 2 && messageType != NODE_NUMBER)
+      if(messageType != NODE_NUMBER)
       {
-        CopyMessage(messages[messageType],message);
-        messagesFlags[messageType] = 1;
+        switch(messageType)
+        {
+        case 0:
+          CopyMessage(messages[0],message);
+          messagesFlags[0] = 1;
+          if(NODE_NUMBER == 1)
+          {
+             phase = 0;
+             counter = (TOTAL_TIME/2 - TOTAL_TIME/3);
+          }
+          else if(NODE_NUMBER == 2)
+          {
+             phase = 0;
+             counter = (TOTAL_TIME/2 - TOTAL_TIME/6);
+          }
+          break;
+        case 1:
+          CopyMessage(messages[1],message);
+          messagesFlags[1] = 1;
+          if(NODE_NUMBER == 0)
+          {
+             phase = 0;
+             counter = (TOTAL_TIME + TOTAL_TIME/3 - TOTAL_TIME/2);
+          }
+          else if(NODE_NUMBER == 2)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME/3 - TOTAL_TIME/6);
+          }
+          break;
+        case 2:
+          CopyMessage(messages[2],message);
+          messagesFlags[2] = 1;
+          if(NODE_NUMBER == 0)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME + TOTAL_TIME/6 - TOTAL_TIME/2);
+          }
+          else if(NODE_NUMBER == 1)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME + TOTAL_TIME/6 - TOTAL_TIME/3);
+          }
+          break;
+        case 3:
+          CopyMessage(messages[0],message);
+          messagesFlags[0] = 1;
+          break;
+        case 4:
+          CopyMessage(messages[1],message);
+          messagesFlags[1] = 1;
+          break;
+        case 5:
+          CopyMessage(messages[2],message);
+          messagesFlags[2] = 1;
+          break;
+        case 255:
+          phase = 0;
+          myNumber = 0;
+          transmissionDone = 1;
+          break;
+        }
       }
-      else if(messageType == 255)
-      {
-        phase = 0;
-        myNumber = 0;
-        transmissionDone = 1;
-      }
-
     }
   }
   
@@ -62,36 +114,26 @@ void Receive()
 
 void MultiplyMatrix(int matrix1Lines, int matrix1Columns, int matrix2Lines, int matrix2Columns)
 {
-  if(matrix1Lines == matrix2Lines) //Matrix1 is transverse
+  if(matrix1Columns == matrix2Lines) 
   {
-    for(int i = 0; i < matrix1Columns; i++)
+    for(int i = 0; i < matrix1Lines; i++)
     {
       for(int j = 0; j < matrix2Columns; j++)
       {
         uint8 sum = 0;
-        for(int k = 0; k < matrix1Lines; k++)
+        for(int k = 0; k < matrix2Lines; k++)
         {
-          sum += (messages[k][i] * codingMatrix[k][j]);
+          sum += (codingMatrix[i][k] * messages[k][j]);
         }
         resultMatrix[i][j] = sum;
       }
     }
   }
 }
-  
-uint8* GetMatrixColumn( int matrixLines, int columnNumber)
-{
-  uint8* column = malloc(matrixLines*sizeof(uint8));
-  for(int i = 0; i < matrixLines; i++)
-  {
-      column[i] = resultMatrix[i][columnNumber];
-  }
-    return column;
-}
 
 void DAF2()
 {
-  uint8* column;
+  uint8* line;
 #if NODE_NUMBER == 0
  if(phase == 0)
  {
@@ -101,14 +143,13 @@ void DAF2()
  {
    if(messagesFlags[1])
     {
-      MultiplyMatrix(2,PAYLOAD_LENGTH - 1,2,4);
-      column = GetMatrixColumn(PAYLOAD_LENGTH - 1,2);
-      Transmit(10,column);
-      free(column);
+      MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
+      line = resultMatrix[2];
+      Transmit(10,line);
     }
     else
     {
-      Transmit(0,messages[NODE_NUMBER]);
+      Transmit(3,messages[NODE_NUMBER]);
     }
  }
 #elif NODE_NUMBER == 1
@@ -120,14 +161,13 @@ void DAF2()
    {
      if(messagesFlags[0])
       {
-        MultiplyMatrix(2,PAYLOAD_LENGTH - 1,2,4);
-        column = GetMatrixColumn(PAYLOAD_LENGTH - 1,3);
-        Transmit(11,column);
-        free(column);
+        MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
+        line = resultMatrix[3];
+        Transmit(11,line);
       }
       else
       {
-        Transmit(1,messages[1]);
+        Transmit(4,messages[1]);
       }
    }
 #endif
@@ -147,10 +187,10 @@ void NodeSetup()
   free(fullMessage);
 #if OPERATION_MODE == DAF  
 #if TOTAL_NODES == 2
-  uint8 partialMatrix[2][4] = {1,0,0,1,0,1,1,0};
-  for(int i = 0; i < 2; i++)
+  uint8 partialMatrix[4][2] = {1,0,0,1,0,1,1,0};
+  for(int i = 0; i < 4; i++)
   {
-    for(int j = 0; j < 4; j ++)
+    for(int j = 0; j < 2; j ++)
       codingMatrix[i][j] = partialMatrix[i][j];
   }
 #elif TOTAL_NODES == 3

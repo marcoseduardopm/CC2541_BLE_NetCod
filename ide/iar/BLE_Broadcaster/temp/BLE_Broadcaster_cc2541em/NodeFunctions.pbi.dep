@@ -1,15 +1,15 @@
 NodeFunctions.pbi: \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_rf_broadcast.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\string.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\prop_regs.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\CommonFunctions.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\sysmac.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\NodeFunctions.c \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/NodeFunctions.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\stdlib.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\NodeFunctions.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\NodeFunctions.c
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib/sysmac.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/CommonFunctions.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/BLE_Broadcaster_cc254x.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x/prop_regs.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\string.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_rf_broadcast.h

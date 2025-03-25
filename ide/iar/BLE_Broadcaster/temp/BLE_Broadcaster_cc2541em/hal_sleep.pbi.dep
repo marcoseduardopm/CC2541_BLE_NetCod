@@ -1,15 +1,15 @@
 hal_sleep.pbi: \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x\hal_sleep.c \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/clock.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x\hal_sleep.c \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/clock.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_defs.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/power_mode.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_rf_proprietary.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/prop_regs.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_mcu.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/power_mode.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_rf_proprietary.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/prop_regs.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\string.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib/sysmac.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_sleep.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/ioCC254x_bitdef.h \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_timer2.h
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_sleep.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/ioCC254x_bitdef.h \
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\components\devices\cc254x/hal_timer2.h

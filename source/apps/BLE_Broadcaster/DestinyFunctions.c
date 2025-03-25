@@ -7,24 +7,11 @@
 
 #ifndef MODETX
 
-void PrintMatrix(int lines, int columns)
+void CopyMatrixLine(uint8* line, int matrixColumns, int lineNumber)
 {
-  for(int i = 0; i < lines; i++)
+  for(int i = 0; i < matrixColumns; i++)
   {
-    for(int j = 0; j < columns; j++)
-    {
-      printf("%02X ",resultMatrix[i][j]);
-    }
-    printf("\n");
-  }
-  printf("\n\n\n");
-}
-
-void CopyMatrixColumn(uint8* column, int matrixLines, int columnNumber)
-{
-  for(int i = 0; i < matrixLines; i++)
-  {
-      resultMatrix[i][columnNumber] = column[i];
+      resultMatrix[lineNumber][i] = line[i];
   }
 }
 
@@ -57,43 +44,86 @@ void Receive()
       switch(messageType)
       {
       case 0:
-        CopyMessage(messages[messageType],message);
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,0);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,0);
         messagesFlags[0] = 1;
+        counter = TOTAL_TIME/2;
+        phase = 0;
+        messageCounter++;
         break;
       case 1:
-        CopyMessage(messages[messageType],message);
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,1);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,1);
         messagesFlags[1] = 1;
+        counter = TOTAL_TIME/3;
+        phase = 1;
+        messageCounter++;
         break;
       case 2:
-        CopyMessage(messages[messageType],message);
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,2);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,2);
+        messagesFlags[2] = 1;
+        counter = TOTAL_TIME/6;
+        phase = 2;
+        break;
+      case 3:
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,0);
+        messagesFlags[0] = 1;
+        break;
+      case 4:
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,1);
+        messagesFlags[1] = 1;
+        break;
+      case 5:
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,2);
         messagesFlags[2] = 1;
         break;
       case 10:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,2);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,2);
+        counter = TOTAL_TIME/2;
+        messagesFlags[2] = 1;
+        phase = 2;
+        messageCounter++;
         break;
       case 11:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,3);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,3);
+        counter = TOTAL_TIME/3;
+        messagesFlags[3] = 1;
+        phase = 3;
+        messageCounter++;
         break;
       case 20:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,3);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,3);
+        counter = TOTAL_TIME/2;
+        messagesFlags[3] = 1;
+        phase = 3;
         break;
       case 21:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,4);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,4);
+        counter = TOTAL_TIME/2;
+        messagesFlags[4] = 1;
+        phase = 4;
         break;
       case 22:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,5);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,5);
+        counter = TOTAL_TIME/3;
+        messagesFlags[5] = 1;
+        phase = 5;
         break;
       case 23:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,6);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,6);
+        counter = TOTAL_TIME/3;
+        messagesFlags[6] = 1;
+        phase = 6;
         break;
       case 24:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,7);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,7);
+        counter = TOTAL_TIME/6;
+        messagesFlags[7] = 1;
+        phase = 7;
         break;
       case 25:
-        CopyMatrixColumn(message,PAYLOAD_LENGTH-1,8);
+        CopyMatrixLine(message,PAYLOAD_LENGTH-1,8);
+        counter = TOTAL_TIME/6;
+        messagesFlags[8] = 1;
+        phase = 8;
         break;
       }
 
@@ -106,31 +136,17 @@ void Receive()
 
 void DAF2()
 {
-  switch(phase)
-  {
-  case 0:
     Receive();
-    break;
-  case 1:
-    Receive();
-    break;
-  case 2:
-    Receive();
-    break;
-  case 3:
-    Receive();
-    break;
-  }
 }
 
 void DestinySetup()
 {
 #if OPERATION_MODE == DAF
 #if TOTAL_NODES == 2
-  uint8 partialMatrix[2][4] = {1,0,0,1,0,1,1,0};
-  for(int i = 0; i < 2; i++)
+  uint8 partialMatrix[4][2] = {1,0,0,1,0,1,1,0};
+  for(int i = 0; i < 4; i++)
   {
-    for(int j = 0; j < 4; j ++)
+    for(int j = 0; j < 2; j ++)
       codingMatrix[i][j] = partialMatrix[i][j];
   }
 #elif TOTAL_NODES == 3

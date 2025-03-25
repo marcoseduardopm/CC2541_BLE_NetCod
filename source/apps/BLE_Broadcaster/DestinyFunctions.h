@@ -6,6 +6,5 @@
 
 void DestinySetup();
 void DestinyRun();
-void PrintMatrix(int lines, int columns);
 
 #endif

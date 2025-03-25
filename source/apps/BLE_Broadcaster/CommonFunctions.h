@@ -7,5 +7,7 @@
 void CopyMessage(uint8* destiny, uint8* source);
 void GetMessagePayload(uint8* outputAddress, uint8* outputData);
 void Transmit(uint8 messageType, uint8* message);
+void InvertMatrix(double *A, double *A_inv);
+void PrintMatrix(uint8* matrix, int lines, int columns);
 
 #endif

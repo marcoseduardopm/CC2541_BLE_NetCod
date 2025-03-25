@@ -111,17 +111,18 @@ uint8 phase = 0;
 
 uint8 addressBytes[6];
 uint8 messages[3][PAYLOAD_LENGTH-1];
-uint8 messagesFlags[3];
+uint8 messagesFlags[9];
 
 deviceMap deviceList[3];
 
-#if TOTAL_NODES == 2
-  uint8 codingMatrix[2][4];
-  uint8 resultMatrix[PAYLOAD_LENGTH-1][4];
-#elif TOTAL_NODES == 3
-  uint8 codingMatrix[3][9];
-  uint8 resultMatrix[PAYLOAD_LENGTH-1][9];
-#endif
+uint8 messageCounter = 0;
+
+uint8 codingMatrix[ROWS][COLS];
+double codingMatrixDouble[ROWS][COLS];
+double inverseCodingMatrix[COLS][ROWS];
+uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-1];
+  
+uint8 timeSlices;
 
 /*******************************************************************************
 * LOCAL FUNCTIONS
@@ -213,12 +214,12 @@ void ClearMessages()
     for(int j = 0; j < PAYLOAD_LENGTH - 1; j++)
       messages[i][j] = 0;
   }
-  for(int i = 0; i < PAYLOAD_LENGTH-1; i++)
+  for(int i = 0; i < ROWS; i++)
   {
-    for (int j = 0; j < 4; j++)
+    for (int j = 0; j < PAYLOAD_LENGTH-1; j++)
       resultMatrix[i][j] = 0;
   }
-  for(int i = 0; i < 3; i ++)
+  for(int i = 0; i < 9; i ++)
     messagesFlags[i] = 0;
 }
   
@@ -346,188 +347,6 @@ void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
 #endif
 }
 
-/*
-void Transmit(uint8 messageType, uint8 sequenceNumber, uint8 partnerNumber, uint8 partnerSequenceNumber, uint8* message)
-{
-  rfirqf1 = 0;
-  
-  uint8 payload[PAYLOAD_LENGTH];
-  
-  for(int i = 0;i< PAYLOAD_LENGTH; i++)    
-    payload[i] = 0;
-  
-  payload[0] = messageType;
-  payload[1] = sequenceNumber;
-  payload[2] = partnerNumber;
-  payload[3] = partnerSequenceNumber;
-  
-  for(int i = 4; i < PAYLOAD_LENGTH; i++)
-  {
-    payload[i] = message[i-4];
-  }
-  
-  unsigned char addressBytes[6];
-  addressBytes[0] = ADDRESS_LOW & 0xFF; // Address (LSB)
-  addressBytes[1] = (ADDRESS_LOW >> 8) & 0xFF;
-  addressBytes[2] = (ADDRESS_LOW >> 16) & 0xFF;
-  addressBytes[3] = (ADDRESS_LOW >> 24) & 0xFF;
-  addressBytes[4] = ADDRESS_HIGH & 0xFF;
-  addressBytes[5] = (ADDRESS_HIGH >> 8) & 0xFF; // Address (MSB)  
-  
-  //obtainSem0();
-  //halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);
-  //releaseSem0();
-  
-  // Start transmitter.
-  //while(RFST != 0);
-  //RFST = CMD_TX;
-  if(RFST != 0)
-  {
-    halRfCommand(CMD_SHUTDOWN);
-    while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
-    rfirqf1 = 0;
-  }
-  halRfStartTx();
-  
-  // Wait for TASKDONE and halt CPU (PM0) until task is completed.
-  while (!( rfirqf1 & RFIRQF1_TASKDONE)) {}     
-
-  // If data received read FIFO   
-  if(PRF.ENDCAUSE == TASK_ENDOK)    
-  {    
-    //Get packet data.
-    //halRfLoadBLEBroadcastPacketPayload();
-    //PRINTF("Tx Ok\n");
-    //txNumber++;
-    //PRINTF("TX: %d, RX: %d\n",txNumber,rxNumber);
-  } else {
-    PRINTF("ENDCAUSE: %d\n",PRF.ENDCAUSE);
-    PRINTF("Tx NOk\n");
-  }  
-  halRfCommand(CMD_TXFIFO_RESET);
-
-  rfirqf1 = 0;  
-}
-*/
-
-/*
-void Receive()
-{
-  // If data received read FIFO   
-  if(PRF.ENDCAUSE == TASK_ENDOK)    
-  {
-    if(rfirqf1 & RFIRQF1_RXOK) {
-      uint8 addressBytes[6];     
-      uint8 payload[PAYLOAD_LENGTH];
-      GetMessagePayload(addressBytes,payload);
-    
-      uint8 messageType = payload[0];
-      uint8 sequenceNumber = payload[1];
-      uint8 partnerNumber = payload[2];
-      uint8 partnerSequenceNumber = payload[3];
-      
-      uint8 message[PAYLOAD_LENGTH-4];
-      for(int i = 4; i < PAYLOAD_LENGTH; i++)
-      {
-        message[i-4] = payload[i];
-      }
-      
-#ifdef MODETX
-      if(messageType == 0) // message from the sender itself
-      {
-        PRINTF("R\n");
-        //Transmit(1,0,OTHERNUMBER,sequenceNumber,message);
-      }
-#else
-      deviceMap* device;
-      if(messageType == 0)
-      {
-        device = GetDeviceByAddress(addressBytes);
-        if(!device)
-          IncludeDevice(addressBytes,numberOfDevices+1,sequenceNumber);
-        else
-        {
-          if(sequenceNumber != device->sequenceNumber+1)
-          {
-            int diff = sequenceNumber - (device->sequenceNumber+1);
-            if(diff > 0)
-            {
-              device->totalPackages = device->totalPackages + diff;
-              device->packageLosses = device->packageLosses + diff;
-              PRINTF("%x %lu %lu\n", device->address[0], (unsigned long)device->packageLosses, (unsigned long)device->totalPackages);
-            }
-            else if(diff < 0)
-            {
-              device->packageLosses = 0;
-              device->totalPackages = 1;
-              device->sequenceNumber = sequenceNumber;
-              PRINTF("%x RENEW\n", device->address[0]);
-            }
-          }
-          else
-          {
-            device->totalPackages = device->totalPackages + 1;
-          }
-          device->sequenceNumber = sequenceNumber;
-          //PRINTF("OWN - %x - %d\n", addressBytes[0], sequenceNumber);
-        }
-      }
-      else if(messageType == 1 || messageType == 2)
-      {
-        device = GetDeviceByNumber(partnerNumber);
-        if(!device)
-          IncludeDevice(addressBytes,numberOfDevices+1,partnerSequenceNumber);
-        else
-        {
-          if(partnerSequenceNumber != device->sequenceNumber+1)
-          {
-            int diff = partnerSequenceNumber - (device->sequenceNumber+1);
-            if(diff > 0)
-            {
-              device->totalPackages = device->totalPackages + diff;
-              device->packageLosses = device->packageLosses + diff;
-              PRINTF("%x %lu %lu\n", device->address[0], (unsigned long)device->packageLosses, (unsigned long)device->totalPackages);
-            }
-            else if(diff < 0)
-            {
-              device->packageLosses = 0;
-              device->totalPackages = 1;
-              device->sequenceNumber = partnerSequenceNumber;
-              PRINTF("%x RENEW\n", device->address[0]);
-            }
-          }
-          else
-          {
-            device->totalPackages = device->totalPackages + 1;
-          }
-          device->sequenceNumber = partnerSequenceNumber;
-          //PRINTF("OTHER - %x - %d\n", addressBytes[0], partnerSequenceNumber);
-        }
-      }
-      //halRfLoadBLEBroadcastPacketPayload(1);
-#endif
-    } else if(rfirqf1 & RFIRQF1_RXNOK) {
-      //PRINTF("NOk ");
-      //halRfLoadBLEBroadcastPacketPayload(1);          
-    } else {
-      PRINTF("*");
-    }        
-    halRfCommand(CMD_RXFIFO_RESET);
-    rfirqf1 = 0;
-  }
-  else if((PRF.ENDCAUSE == TASK_RXTIMEOUT))
-  {
-    PRINTF("Timeout\n");
-  }
-  else 
-  {
-    PRINTF("- ");
-    PRINTF("PRF.ENDCAUSE: %d\n", PRF.ENDCAUSE);
-  }
-  halRfCommand(CMD_RXFIFO_RESET);
-}
-*/
-
 uint8 ReceiveInitSignal()
 {
   rfirqf1 = 0;  
@@ -575,12 +394,7 @@ HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR)
 {
   counter++;
   if(counter >= TOTAL_TIME)
-  {
-#if TOTAL_NODES == 2
-    int timeSlices = 4;
-#elif TOTAL_NODES == 3
-    int timeSlices = 9;
-#endif
+  {   
     ledStatus = !ledStatus;
     TurnLED(ledStatus);
     counter = 0;
@@ -610,6 +424,31 @@ void ConfigureTimer()
   T1CC0L = 0x00;     //T1CC0 LSB
   T1CC0H = 0x7D;     //T1CC0 MSB
   IEN1 |= 0x2;       //Enable Timer 1 interrupt
+}
+
+void ZeroLine(uint8* line, int size)
+{
+  for(int i = 0; i < size; i++)
+    line[i] = 0;
+}
+
+void GetResults(int matrix1Lines, int matrix1Columns, int matrix2Lines, int matrix2Columns)
+{
+  if(matrix1Columns == matrix2Lines) 
+  {
+    for(int i = 0; i < matrix1Lines; i++)
+    {
+      for(int j = 0; j < matrix2Columns; j++)
+      {
+        double sum = 0;
+        for(int k = 0; k < matrix2Lines; k++)
+        {
+          sum += (inverseCodingMatrix[i][k] * (double)resultMatrix[k][j]);
+        }
+        messages[i][j] = (uint8)(sum + 0.5);
+      }
+    }
+  }
 }
 
 /*******************************************************************************
@@ -665,14 +504,20 @@ int main(void) {
     
     halRfEnableInterrupt(RFIRQF1_TASKDONE);
     
+#if TOTAL_NODES == 2
+    timeSlices = 4;
+#elif TOTAL_NODES == 3
+    timeSlices = 9;
+#endif
+    
 #ifdef MODETX
 
 #if NODE_NUMBER == 0
-    uint32 randomTime = TOTAL_TIME/2;
+    uint32 waitTime = TOTAL_TIME/2;
 #elif NODE_NUMBER == 1
-    uint32 randomTime = TOTAL_TIME/3;
+    uint32 waitTime = TOTAL_TIME/3;
 #elif NODE_NUMBER == 2
-    uint32 randomTime = TOTAL_TIME/6;
+    uint32 waitTime = TOTAL_TIME/6;
 #endif
 
     for(int i = 0; i < 6; i++)
@@ -680,7 +525,7 @@ int main(void) {
     
     while(!ReceiveInitSignal()) {}
     
-    sleepMode(randomTime, 0);
+    sleepMode(waitTime, 0);
     
     ClearMessages();
     
@@ -713,8 +558,6 @@ int main(void) {
     Transmit(255,startMessage);
     free(startMessage);
     
-    //sleepMode(TOTAL_TIME, 0);
-    
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
     
@@ -730,7 +573,21 @@ int main(void) {
       
       }
       
-      //PrintMatrix(PAYLOAD_LENGTH-1,4);
+      for(int i = 0; i < ROWS; i++)
+      {
+        if(!messagesFlags[i])
+          ZeroLine(codingMatrix[i],COLS);
+        for(int j = 0; j < COLS; j++)
+          codingMatrixDouble[i][j] = (double) codingMatrix[i][j];
+      }
+      
+      InvertMatrix((double*)codingMatrixDouble,(double*)inverseCodingMatrix);
+      
+      GetResults(COLS,ROWS,ROWS,PAYLOAD_LENGTH-1);
+      
+      //if(messageCounter == 4)
+        //PrintMatrix(4,PAYLOAD_LENGTH-1);
+      messageCounter = 0;
       ClearMessages();
       transmissionDone = 0;
       
