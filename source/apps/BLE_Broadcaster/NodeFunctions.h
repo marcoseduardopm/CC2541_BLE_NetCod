@@ -6,5 +6,6 @@
 
 void NodeSetup();
 void NodeRun();
+uint8 ReceiveInitSignal();
 
 #endif

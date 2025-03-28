@@ -51,52 +51,16 @@
 * INCLUDES
 */
 // Include device specific files
-#if (chip==2541)
-#include "ioCC2541.h"
-#elif (chip==2543)
-#include "ioCC2543.h"
-#elif (chip==2544)
-#include "ioCC2544.h"
-#elif (chip==2545)
-#include "ioCC2545.h"
-#else
-#error "Chip not supported!"
-#endif
+
 #include "BLE_Broadcaster_cc254x.h"
-#include "prop_regs.h"
-#include "hal_timer2.h"
-#include "hal_sleep.h"
-#include "hal_rf_proprietary.h"
-#include "hal_rf_broadcast.h"
-#include "hal_int.h"
-#include "hal_board.h"
-#include "hal_button.h"
-#include "hal_led.h"
 #include "NodeFunctions.h"
 #include "DestinyFunctions.h"
 #include "CommonFunctions.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-#define DEBUG 1
-#define DELAYTIME 5000 //60000 //for TX
-
-#if(DEBUG)
-  #include <stdio.h>
-#endif
-
-// Global flags.
 volatile uint8 rfirqf1 = 0;
 extern uint8 RadioTimeoutFlag;
-
-#if(DEBUG)
-#define PRINTF(...) printf(__VA_ARGS__)
-#else
-#define PRINTF(...) asm("nop");
-#endif
-
-#if(POWER_SAVING)
-uint8 powerModeFlag;
-#endif
 
 /*******************************************************************************
 * GLOBAL VARIABLES
@@ -116,6 +80,7 @@ uint8 messagesFlags[9];
 deviceMap deviceList[3];
 
 uint8 messageCounter = 0;
+uint8 messageSent = 0;
 
 uint8 codingMatrix[ROWS][COLS];
 double codingMatrixDouble[ROWS][COLS];
@@ -124,270 +89,11 @@ uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-1];
   
 uint8 timeSlices;
 
+uint8 powerModeFlag;
+
 /*******************************************************************************
 * LOCAL FUNCTIONS
 */
-
-void IncludeDevices()
-{
-  deviceMap nodeA, nodeB, nodeC;
-  
-  for(int i = 0; i < 6; i++)
-    nodeA.address[i] = 0xAA;
-  nodeA.number = 0;
-  nodeA.sequenceNumber = 0;
-  nodeA.totalPackages = 0;
-  nodeA.packageLosses = 0;
-  
-  for(int i = 0; i < 6; i++)
-    nodeB.address[i] = 0xBB;
-  nodeB.number = 1;
-  nodeB.sequenceNumber = 0;
-  nodeB.totalPackages = 0;
-  nodeB.packageLosses = 0;
-  
-  for(int i = 0; i < 6; i++)
-    nodeC.address[i] = 0xCC;
-  nodeC.number = 2;
-  nodeC.sequenceNumber = 0;
-  nodeC.totalPackages = 0;
-  nodeC.packageLosses = 0;
-
-  deviceList[0] = nodeA;
-  deviceList[1] = nodeB;
-  deviceList[2] = nodeC;
-}
-
-/*
-deviceMap* GetDeviceByNumber(int num)
-{
-  for(int i = 0; i < numberOfDevices; i++)
-  {
-    if(deviceList[i].number == num)
-      return &(deviceList[i]);
-  }
-  return NULL;
-}
-
-deviceMap* GetDeviceByAddress(uint8* add)
-{
-  for(int i = 0; i < numberOfDevices; i++)
-  {
-    uint8 isEqual = 1;
-    for(int j = 0; j < 6; j++)
-    {
-      if(deviceList[i].address[j] != add[j])
-        isEqual = 0;
-    }
-    if(isEqual)
-      return &(deviceList[i]);
-  }
-  return NULL;
-}*/
-
-/*
-void GetMessagePayload(uint8* outputAddress, uint8* outputData)
-{
-  if(RFRXFLEN > PAYLOAD_LENGTH)
-  {
-    RFD;RFD;RFD;
-    for(int i = 0; i < 6; i++){
-      outputAddress[i] = RFD;
-      //PRINTF("%d ", outputAddress[i]);
-    }
-    RFD;RFD;RFD;RFD;RFD;
-    for(int i = 0; i < PAYLOAD_LENGTH; i++){
-      outputData[i] = RFD;
-      //PRINTF("%d ", outputData[i]);
-    }
-    //PRINTF("\n");
-  }
-  else
-    PRINTF("EMPTY PACKAGE\n");
-}
-*/
-
-void ClearMessages()
-{
-  for(int i = 0; i < 3; i ++)
-  {
-    for(int j = 0; j < PAYLOAD_LENGTH - 1; j++)
-      messages[i][j] = 0;
-  }
-  for(int i = 0; i < ROWS; i++)
-  {
-    for (int j = 0; j < PAYLOAD_LENGTH-1; j++)
-      resultMatrix[i][j] = 0;
-  }
-  for(int i = 0; i < 9; i ++)
-    messagesFlags[i] = 0;
-}
-  
-void halRfLoadBLEBroadcastPacketPayload()
-{
-  uint8 i;
-  uint8 send_data_length = RFRXFLEN;
-  PRINTF("%d: ", send_data_length);
-  //Number of bytes effective data
-  //send_data_length = (sizeof(data_to_send)/sizeof(int));
-
-  uint8* received_data = malloc(send_data_length);
-  //Read data from FIFO
-  for(i=0;i<send_data_length;i++){
-    received_data[i] = RFD;
-    //if(print)
-      PRINTF("%d ", received_data[i]);
-  }
-  PRINTF("\n");
-
-  free(received_data);
-  return;  
-}
-
-void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
-{
-  
-#if(POWER_SAVING)
-    //uint8 tuneTimeoutFlag = 0, ovf10Bit1 = 0, ovf10Bit2 = 0;
-    uint16 timeStampFine, fine;
-    uint32 timeStampCoarse, coarse;
-    int32 sleepDuration;
-        //  This part illustrate one way of implementing sleep functionality.
-        //   This is not fully optimized and can be implemented in several ways.
-        //
-        //   The main procedure here is:
-        //
-        //       Get the captured timestamp from the start of the last received packet.
-        //       Get the current time from timer2.
-        //       Calculate the time delta and subtract that from the default sleep duration.
-        //       Set the sleep time duration.
-        //       Chose which power mode to enter (or abort if the sleep duration is to short).
-        //       Enable Sleep Timer interrupt.
-        //       Enable Global Interrupt (EA).
-        //       Enter Power Mode.
-        //       Wake up on sleep timer isr.
-        //       Wait until 32 MHz XTAL is stable.
-        //       Sync up the timer2 value witht he low speed 32 kHz sleep timer clock.
-        //
-        //  Set sleep duration to default (approx. 9 ms) and subtract the
-        //  execution time since last received packet. 
-        //sleepDuration = 290; //9ms
-        sleepDuration = sleepDurationMs*32; //conversion to ms
-        if(afterLastRecPackage)
-        {
-          // Retrieve captured timestamp from start of received packet (SOP).
-          halTimer2GetCapturedTime(&timeStampFine, &timeStampCoarse);
-
-          // Retrieve current time from timer 2 (TIME).
-          halTimer2GetFullCurrentTime(&fine, &coarse);
-
-          //  Find time delta between SOP and TIME (32 MHz ticks). This calcuation
-          //  assumes that the timer2 base period is set to 1 ms (0x7D00). 
-          coarse -= timeStampCoarse;
-          if( fine < timeStampFine ) {
-            fine += (0x7D00 - timeStampFine);
-            coarse--;
-          }
-          else {
-            fine -=  timeStampFine;
-          }
-          
-          //  Convert the 32 MHz ticks to 32 kHz ticks. The conversion has some
-          //  inaccuracy as it ignores the low speed clock setting. The CC2541
-          //  and CC2545 also has an optional low speed crystal oscillator which
-          //  has a slightly different frequency than the RC oscillator:
-          //  LS-XOSC: 32.768 kHz
-          //  LS-RCOSC: 32.753 kHz.
-          
-          //subtract the time difference between the last rec packet and now
-          //from the sleep duration
-          sleepDuration -= (uint32) ((fine/977) + (32*coarse) + 32);
-        }
-        
-        if(sleepDuration < 32) {
-            // If sleep duration is less than 1 ms, do not enter sleep.
-            powerModeFlag = 0;
-        }
-        else if (sleepDuration < 100) {
-            // If sleep duration is less than 3 ms, use PM1 instead of PM2.
-            powerModeFlag = 1;
-        }
-        else {
-            powerModeFlag = 2;
-        }
-
-        if(powerModeFlag) {
-            // Set the sleep time compare value.
-            halSleepSetSleepTimer(sleepDuration);
-
-            // CC2541/45 has automatic sync between 32 kHz ST and timer2.
-            halTimer2Stop(1);
-
-            // Disable the sleep timer interrupt.
-            halSleepEnableInterrupt();
-
-            // Make Sure Global Interrupt is enabled.
-            halIntOn();
-
-            // Set LED3 indicate entering power mode function.
-            //halLedSet(3);
-
-            // No more pillow fights, time for bed.
-            halSleepEnterPowerMode(powerModeFlag);
-
-            // Clear LED3 indicate exit from power mode function.
-            //halLedClear(3);
-
-            // Disable the sleep timer interrupt.
-            halSleepDisableInterrupt();
-
-            // CC2541/45 has automatic sync between 32 kHz ST and timer2.
-            halTimer2Start(1);//halTimer2Start(1);
-        }
-#endif
-}
-
-uint8 ReceiveInitSignal()
-{
-  rfirqf1 = 0;  
-  halRfStartRx();
-  
-  while (!(rfirqf1 & RFIRQF1_TASKDONE)) {}  
-  
-  // If data received read FIFO   
-  if(PRF.ENDCAUSE == TASK_ENDOK)    
-  {
-    if(rfirqf1 & RFIRQF1_RXOK) {
-      
-      uint8 addressBytes[6];     
-      uint8 payload[PAYLOAD_LENGTH];
-      
-      GetMessagePayload(addressBytes,payload);
-      uint8 messageType = payload[0];
-      
-      if(messageType == 255)
-      {
-        phase = 0;
-        myNumber = 0;
-        halRfCommand(CMD_RXFIFO_RESET);
-        rfirqf1 = 0;
-        return 1;
-      }
-    }
-  }
-  
-  halRfCommand(CMD_RXFIFO_RESET);
-  rfirqf1 = 0;
-  return 0;
-}
-
-void TurnLED(uint8 led)
-{
-  if(led)
-    MCU_IO_OUTPUT(1, 2, 1);
-  else
-    MCU_IO_INPUT(1, 2, MCU_IO_PULLDOWN);
-}
 
 // Timer 1 Interrupt routine (every 1 ms)
 HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR) 
@@ -426,31 +132,6 @@ void ConfigureTimer()
   IEN1 |= 0x2;       //Enable Timer 1 interrupt
 }
 
-void ZeroLine(uint8* line, int size)
-{
-  for(int i = 0; i < size; i++)
-    line[i] = 0;
-}
-
-void GetResults(int matrix1Lines, int matrix1Columns, int matrix2Lines, int matrix2Columns)
-{
-  if(matrix1Columns == matrix2Lines) 
-  {
-    for(int i = 0; i < matrix1Lines; i++)
-    {
-      for(int j = 0; j < matrix2Columns; j++)
-      {
-        double sum = 0;
-        for(int k = 0; k < matrix2Lines; k++)
-        {
-          sum += (inverseCodingMatrix[i][k] * (double)resultMatrix[k][j]);
-        }
-        messages[i][j] = (uint8)(sum + 0.5);
-      }
-    }
-  }
-}
-
 /*******************************************************************************
 * @fn          main
 *
@@ -475,7 +156,7 @@ int main(void) {
     //Ensure that the P12 is at input (high impedance)
     MCU_IO_INPUT(1, 2, MCU_IO_TRISTATE);
     
-    PRINTF("Init\n");
+    printf("Init\n");
     
     halRfDisableRadio(FORCE);
     halRfBroadcastInit();
@@ -525,12 +206,15 @@ int main(void) {
     
     while(!ReceiveInitSignal()) {}
     
-    sleepMode(waitTime, 0);
+    //sleepMode(waitTime, 0);
     
     ClearMessages();
     
     //Set Timer 1 to interrupt every 1 ms
     ConfigureTimer();
+    
+    while(counter < waitTime){}
+    counter = 0;
     
     while(1)  
     {
@@ -539,15 +223,13 @@ int main(void) {
       
       while(!transmissionDone)
       {
-        
         NodeRun();
-
       }
       
       myNumber++;
       ClearMessages();
       transmissionDone = 0;
-      
+      messageSent = 0;
     }
     
 #else
@@ -568,9 +250,7 @@ int main(void) {
       
       while(!transmissionDone)
       {
-        
         DestinyRun();
-      
       }
       
       for(int i = 0; i < ROWS; i++)
@@ -582,15 +262,14 @@ int main(void) {
       }
       
       InvertMatrix((double*)codingMatrixDouble,(double*)inverseCodingMatrix);
-      
       GetResults(COLS,ROWS,ROWS,PAYLOAD_LENGTH-1);
       
-      //if(messageCounter == 4)
-        //PrintMatrix(4,PAYLOAD_LENGTH-1);
+      //if(messagesFlags[0]&&messagesFlags[1]&&messagesFlags[2]&&messagesFlags[3])
+        //PrintMatrix((uint8*)messages,2,PAYLOAD_LENGTH-1);
+      printf("%d %d\n", deviceList[0].sequenceNumber, deviceList[1].sequenceNumber);
       messageCounter = 0;
       ClearMessages();
       transmissionDone = 0;
-      
     }
     
 #endif

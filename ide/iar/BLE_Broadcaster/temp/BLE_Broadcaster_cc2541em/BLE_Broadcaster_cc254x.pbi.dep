@@ -19,7 +19,7 @@ BLE_Broadcaster_cc254x.pbi: \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_sleep.h \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\hal_timer2.h \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\devices\cc254x\prop_regs.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\common\hal_types.h \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\ioCC2541.h \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c

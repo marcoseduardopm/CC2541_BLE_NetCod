@@ -41,6 +41,28 @@
 
 #ifndef _PER_TEST_CC254x_H
 #define _PER_TEST_CC254x_H
+
+#if (chip==2541)
+#include "ioCC2541.h"
+#elif (chip==2543)
+#include "ioCC2543.h"
+#elif (chip==2544)
+#include "ioCC2544.h"
+#elif (chip==2545)
+#include "ioCC2545.h"
+#else
+#error "Chip not supported!"
+#endif
+
+#include "prop_regs.h"
+#include "hal_timer2.h"
+#include "hal_sleep.h"
+#include "hal_rf_proprietary.h"
+#include "hal_rf_broadcast.h"
+#include "hal_int.h"
+#include "hal_board.h"
+#include "hal_button.h"
+#include "hal_led.h"
 /*******************************************************************************
 * DEFINES
 */
@@ -86,15 +108,23 @@ typedef struct deviceMap deviceMap;
 //Define if its a Node or a Destiny
 //#define MODETX
 
+#ifdef MODETX
+#define NODE_NUMBER 1
+#endif
+
 #define PAYLOAD_LENGTH 26
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
-#define TOTAL_TIME 1000
+#define TOTAL_TIME 3000
 
 #define OPERATION_MODE DAF
 #define TOTAL_NODES 2
 
-#ifdef MODETX
-#define NODE_NUMBER 1
+#if TOTAL_NODES == 2
+#define ROWS 4
+#define COLS 2
+#elif TOTAL_NODES == 3
+#define ROWS 9
+#define COLS 3
 #endif
 
 extern volatile uint8 rfirqf1;
@@ -107,19 +137,12 @@ extern uint8 phase;
 extern uint8 transmissionDone;
 extern uint16 counter;
 extern uint8 messagesFlags[9];
-
+extern uint8 powerModeFlag;
 extern uint8 messageCounter;
-
-#if TOTAL_NODES == 2
-#define ROWS 4
-#define COLS 2
-#elif TOTAL_NODES == 3
-#define ROWS 9
-#define COLS 3
-#endif
+extern uint8 messageSent;
   
 extern uint8 codingMatrix[ROWS][COLS];
 extern uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-1];
-
+extern double inverseCodingMatrix[COLS][ROWS];
 
 #endif
