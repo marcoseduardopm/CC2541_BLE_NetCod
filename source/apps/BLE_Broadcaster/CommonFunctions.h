@@ -8,7 +8,7 @@ void TurnLED(uint8 led);
 void IncludeDevices();
 void ClearMessages();
 void GetMessagePayload(uint8* outputAddress, uint8* outputData);
-void Transmit(uint8 messageType, uint8* message);
+void Transmit(uint8 messageType, uint8 mask, uint8* message);
 void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage);
 void CodingMatrixConfig();
 void PrintMatrix(uint8* matrix, int lines, int columns);

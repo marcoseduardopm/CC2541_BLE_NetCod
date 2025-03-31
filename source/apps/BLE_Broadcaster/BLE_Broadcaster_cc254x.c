@@ -74,20 +74,22 @@ uint8 myNumber = 0;
 uint8 phase = 0;
 
 uint8 addressBytes[6];
-uint8 messages[3][PAYLOAD_LENGTH-1];
+uint8 messages[3][PAYLOAD_LENGTH-2];
 uint8 messagesFlags[9];
 
-deviceMap deviceList[3];
+uint8 receivedMask = 0;
 
-uint8 messageCounter = 0;
+deviceMap* deviceList[3];
+
 uint8 messageSent = 0;
+uint16 numberOfTransmissions = 0;
 
 uint8 codingMatrix[ROWS][COLS];
 double codingMatrixDouble[ROWS][COLS];
 double inverseCodingMatrix[COLS][ROWS];
-uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-1];
+uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-2];
   
-uint8 timeSlices;
+uint8 timeSlices = TIME_SLICES;
 
 uint8 powerModeFlag;
 
@@ -111,12 +113,12 @@ HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR)
       phase = 0;
       transmissionDone = 1;
     }
-    if(RFST != 0)
-    {
+    //if(RFST != 0)
+    //{
       halRfCommand(CMD_SHUTDOWN);
-      while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
-      rfirqf1 = 0;
-    }
+      //while (!(rfirqf1 & RFIRQF1_TASKDONE)){}
+      //rfirqf1 = 0;
+    //}
   }
   IRCON &= 0xFD; // Clean interrupt flag
   return;
@@ -124,7 +126,7 @@ HAL_ISR_FUNCTION(T1_ISR,T1_VECTOR)
 
 void ConfigureTimer()
 {
-  CLKCONCMD &= 0xC7; //32MHz Timer tick
+  //CLKCONCMD &= 0xC7; //32MHz Timer tick
   T1CTL = 0x02;      //Count from 0 to T1CC0 (32000 - for 1 ms)
   T1CCTL0 = 0x44;    //Compare mode
   T1CC0L = 0x00;     //T1CC0 LSB
@@ -185,11 +187,7 @@ int main(void) {
     
     halRfEnableInterrupt(RFIRQF1_TASKDONE);
     
-#if TOTAL_NODES == 2
-    timeSlices = 4;
-#elif TOTAL_NODES == 3
-    timeSlices = 9;
-#endif
+    IncludeDevices();
     
 #ifdef MODETX
 
@@ -202,7 +200,7 @@ int main(void) {
 #endif
 
     for(int i = 0; i < 6; i++)
-      addressBytes[i] = deviceList[NODE_NUMBER].address[i];
+      addressBytes[i] = deviceList[NODE_NUMBER]->address[i];
     
     while(!ReceiveInitSignal()) {}
     
@@ -224,7 +222,7 @@ int main(void) {
       while(!transmissionDone)
       {
         NodeRun();
-      }
+      }      
       
       myNumber++;
       ClearMessages();
@@ -234,10 +232,8 @@ int main(void) {
     
 #else
     
-    IncludeDevices();
-    
-    uint8* startMessage = malloc(PAYLOAD_LENGTH-1*sizeof(uint8));
-    Transmit(255,startMessage);
+    uint8* startMessage = malloc(PAYLOAD_LENGTH*sizeof(uint8));
+    Transmit(255,0xFF,startMessage);
     free(startMessage);
     
     //Set Timer 1 to interrupt every 1 ms
@@ -253,6 +249,8 @@ int main(void) {
         DestinyRun();
       }
       
+      numberOfTransmissions++;
+      
       for(int i = 0; i < ROWS; i++)
       {
         if(!messagesFlags[i])
@@ -262,14 +260,28 @@ int main(void) {
       }
       
       InvertMatrix((double*)codingMatrixDouble,(double*)inverseCodingMatrix);
-      GetResults(COLS,ROWS,ROWS,PAYLOAD_LENGTH-1);
+      GetResults(COLS,ROWS,ROWS,PAYLOAD_LENGTH-2);
       
-      //if(messagesFlags[0]&&messagesFlags[1]&&messagesFlags[2]&&messagesFlags[3])
-        //PrintMatrix((uint8*)messages,2,PAYLOAD_LENGTH-1);
-      printf("%d %d\n", deviceList[0].sequenceNumber, deviceList[1].sequenceNumber);
-      messageCounter = 0;
+      //if(!(messagesFlags[0]&&messagesFlags[1]&&messagesFlags[2]&&messagesFlags[3]))
+        //PrintMatrix((uint8*)messages,2,PAYLOAD_LENGTH-2);
+      //printf("%d %d\n", deviceList[0].sequenceNumber, deviceList[1].sequenceNumber);
       ClearMessages();
       transmissionDone = 0;
+      
+      if(numberOfTransmissions >= TOTAL_TRANSMISSIONS)
+      {
+        printf("Results:\n");
+        
+        for(int i = 0; i < 3; i ++)
+        {
+          deviceList[i]->packageLosses = deviceList[i]->packageLosses + (TOTAL_TRANSMISSIONS - deviceList[i]->sequenceNumber - 1);
+          printf("Node %d: ",i);
+          printf("%d transmissions, ",(int)deviceList[i]->totalPackages);
+          printf("%d packages lost, ",(int)deviceList[i]->packageLosses);
+          printf("sequence number = %d\n",(int)deviceList[i]->sequenceNumber);
+        }
+        return 0;
+      }
     }
     
 #endif

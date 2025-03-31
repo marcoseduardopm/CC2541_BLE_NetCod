@@ -5,365 +5,132 @@
     <configuration>
         <name>BLE_Broadcaster_cc2541em</name>
         <outputs>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_led.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\CommonFunctions.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_broadcast.r51</file>
-            <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_assert.xcl</file>
-            <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
-            <file>$TOOLKIT_DIR$\inc\clib\float.h</file>
-            <file>$TOOLKIT_DIR$\inc\clib\stdlib.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_sleep.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util_lcd.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\clock.r51</file>
-            <file>$TOOLKIT_DIR$\inc\clib\math.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\pseudo_inverse.r51</file>
-            <file>$TOOLKIT_DIR$\inc\ioCC2541.h</file>
-            <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
-            <file>$PROJ_DIR$\..\..\..\hex\BLE_Broadcaster_cc2541em.hex</file>
-            <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\adc.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_proprietary.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_button.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\adc.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_mcu.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_assert.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_mcu.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_timer2.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_sleep.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc254x.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\clock.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\DestinyFunctions.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_board.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\power_mode.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_int.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\NodeFunctions.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_int.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_proprietary.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_led.xcl</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_assert.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util_lcd.r51</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_potmeter.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util.xcl</file>
-            <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_joystick.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc254x.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc2541em.pbd</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\CommonFunctions.r51</file>
-            <file>$PROJ_DIR$\BLE_Broadcaster_cc2541em.d51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_button.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\pseudo_inverse.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\DestinyFunctions.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_timer2.xcl</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_joystick.r51</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em.map</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_lcd_srf05.r51</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_button.c</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_lcd_srf05.xcl</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\ioCC254x_bitdef.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_button.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_int.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_potmeter.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_joystick.c</file>
             <file>$PROJ_DIR$\..\..\..\source\components\utils\util.c</file>
             <file>$PROJ_DIR$\..\..\..\source\components\utils\util.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_joystick.c</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_potmeter.xcl</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_mcu.h</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\NodeFunctions.xcl</file>
             <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_lcd.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.s51</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_assert.c</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_board.r51</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_broadcast.xcl</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\prop_regs.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.c</file>
             <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_led.h</file>
-            <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_cc2541F256_banked.xcl</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\common\hal_lcd_srf05.c</file>
-            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_potmeter.r51</file>
             <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_led.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.h</file>
             <file>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_joystick.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\prop_regs.h</file>
             <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_broadcast.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\hal_cc8051.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_int.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_broadcast.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.h</file>
             <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_potmeter.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\ioCC254x_bitdef.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.h</file>
             <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_timer2.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_timer2.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.c</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_defs.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_types.h</file>
-            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.s51</file>
             <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_mcu.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\common\hal_lcd_srf05.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_joystick.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_int.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_timer2.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_button.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_broadcast.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_assert.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_rf_proprietary.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_button.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_mcu.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_defs.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\hal_cc8051.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_types.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\hal_int.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.c</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.h</file>
             <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.h</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_led.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_lcd_srf05.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_joystick.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_proprietary.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_int.xcl</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</file>
+            <file>$TOOLKIT_DIR$\inc\clib\math.h</file>
+            <file>$TOOLKIT_DIR$\config\devices\Texas Instruments\lnk51ew_cc2541F256_banked.xcl</file>
+            <file>$TOOLKIT_DIR$\inc\clib\float.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\power_mode.r51</file>
+            <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\CommonFunctions.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_timer2.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_sleep.xcl</file>
+            <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
+            <file>$PROJ_DIR$\..\..\..\hex\BLE_Broadcaster_cc2541em.hex</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_board.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util_lcd.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\DestinyFunctions.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_assert.xcl</file>
+            <file>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.h</file>
+            <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_potmeter.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\pseudo_inverse.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_assert.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_button.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util_lcd.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_joystick.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\CommonFunctions.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_lcd_srf05.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_sleep.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\NodeFunctions.r51</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_assert.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_proprietary.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_button.xcl</file>
+            <file>$TOOLKIT_DIR$\inc\ioCC2541.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_mcu.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\DestinyFunctions.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_broadcast.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_board.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_rf_broadcast.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\NodeFunctions.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\adc.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_timer2.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc254x.r51</file>
+            <file>$TOOLKIT_DIR$\inc\clib\stdlib.h</file>
+            <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\clock.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_mcu.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\util.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc254x.xcl</file>
+            <file>$PROJ_DIR$\BLE_Broadcaster_cc2541em.d51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\clock.r51</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\BLE_Broadcaster_cc2541em.pbd</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\adc.xcl</file>
+            <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_potmeter.r51</file>
+            <file>$PROJ_DIR$\..\..\..\source\components\targets\interface\hal_potmeter.h</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_led.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em.map</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\pseudo_inverse.xcl</file>
+            <file>$PROJ_DIR$\temp\BLE_Broadcaster_cc2541em\hal_int.r51</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
             <outputs>
                 <tool>
                     <name>XLINK</name>
-                    <file> 46 52 15</file>
+                    <file> 99 107 62</file>
                 </tool>
             </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\BLE_Broadcaster_cc2541em.d51</name>
-            <outputs>
-                <tool>
-                    <name>XLINK</name>
-                    <file> 52 15</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>XLINK</name>
-                    <file> 78 17 43 10 45 28 22 72 47 34 51 53 0 21 80 2 35 25 24 33 31 12 30 38 41</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_button.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 47</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 19</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 64 13 90 105 67 58</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_potmeter.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 80</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 66</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 39 99 105 13 90 64 67</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\utils\util.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 30</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 40</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 62 106 105</file>
-                </tool>
-            </inputs>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_joystick.c</name>
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 51</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 42</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 64 13 90 106 105 67 99 84</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.s51</name>
-            <outputs>
-                <tool>
-                    <name>A8051</name>
-                    <file> 31</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_assert.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 22</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 4</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 37 105 77 106 67</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 12</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 48</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 14 16 6 11 63</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 72</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 29</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 105 59 67 64 13 90 69 84 93</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\common\hal_lcd_srf05.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 53</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 56</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 69 67 64 13 90 105 62</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_led.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 0</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 36</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 77 64 13 90 105 67</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 38</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 9</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 64 13 90 106 105 67 69 84 58 37 54 62 14 16</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 43</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 26</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 107 106 13 75 102 100 95 105 67 14 16 92 59 64 90 58 77 98 7 97 109 3 5</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 28</file>
+                    <file> 74</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
@@ -373,45 +140,64 @@
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 97 7 16 106 109 107 13 75 102 100 95 105 67 14 92 59 64 90 58 77 3 5 63</file>
+                    <file> 21 83 36 37 32 29 44 18</file>
                 </tool>
             </inputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.c</name>
+            <name>$PROJ_DIR$\..\..\..\source\components\utils\util.c</name>
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 17</file>
+                    <file> 97</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 20</file>
+                    <file> 80</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 99 106 105 13</file>
+                    <file> 3 37 32</file>
                 </tool>
             </inputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.c</name>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_led.c</name>
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 10</file>
+                    <file> 47</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 27</file>
+                    <file> 106</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 93 106 105 13 67 57</file>
+                    <file> 37 5 21 83 36 32 29</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 64</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 73</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 21 83 36 37 32 29 4 18 28 79 13 3 94 103</file>
                 </tool>
             </inputs>
         </file>
@@ -420,36 +206,17 @@
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 2</file>
+                    <file> 88</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 74</file>
+                    <file> 86</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 95 13 105 106 67 75 14 16 92 107 102 100 59 64 90 58 77</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\common\hal_int.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 34</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 32</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 106 105 59 64 13 90 67</file>
+                    <file> 27 83 32 37 29 8 94 103 25 40 22 23 20 21 36 28 5</file>
                 </tool>
             </inputs>
         </file>
@@ -458,45 +225,7 @@
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 35</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 18</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 95 13 105 106 67 75 14 16 102 57 107 100 92 59 64 90 58 77</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 25</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 8</file>
-                </tool>
-            </outputs>
-            <inputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 93 106 105 13 67 82 95 75 14 16 100 57 102</file>
-                </tool>
-            </inputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_timer2.c</name>
-            <outputs>
-                <tool>
-                    <name>ICC8051</name>
-                    <file> 24</file>
+                    <file> 81</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
@@ -506,26 +235,263 @@
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 102 106 59 105 75 13 57</file>
+                    <file> 27 83 32 37 29 8 94 103 22 12 40 23 25 20 21 36 28 5</file>
                 </tool>
             </inputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</name>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_potmeter.c</name>
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 45</file>
+                    <file> 104</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 1</file>
+                    <file> 69</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 109 7 16 106 107 13 75 102 100 95 105 67 14 92 59 64 90 58 77 3 5</file>
+                    <file> 37 105 44 32 83 36 21 29</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_timer2.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 91</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 59</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 22 37 20 32 8 83 12</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\power_mode.s51</name>
+            <outputs>
+                <tool>
+                    <name>A8051</name>
+                    <file> 56</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_mcu.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 84</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 96</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 37 29 38 32 83 79 0</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\common\hal_lcd_srf05.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 48</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 76</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 37 4 29 21 83 36 32 3</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_board.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 87</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 63</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 37 32 20 29 21 83 36 4 18 38</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_button.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 72</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 82</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 37 21 83 36 32 29 28</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\targets\srf05_soc\hal_assert.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 71</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 66</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 79 32 5 37 29</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 77</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 60</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 38 37 32 83 29 0 27 8 94 103 23 12 22</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 85</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 65</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 43 93 103 37 45 40 83 8 22 23 27 32 29 94 25 20 21 36 28 5 57 61 67</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\clock.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 100</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 95</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 38 37 32 83 29 12</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 92</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 98</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 40 37 83 8 22 23 27 32 29 94 103 25 20 21 36 28 5 34 93 43 45 57 61</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\common\cc8051\adc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 90</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 102</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 44 37 32 83</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\components\common\hal_int.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 109</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 51</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 37 32 20 21 83 36 29</file>
                 </tool>
             </inputs>
         </file>
@@ -534,36 +500,70 @@
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 33</file>
+                    <file> 78</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 68</file>
+                    <file> 89</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 98 7 16 106 109 107 13 75 102 100 95 105 67 14 92 59 64 90 58 77 3 5</file>
+                    <file> 34 93 103 37 45 40 83 8 22 23 27 32 29 94 25 20 21 36 28 5 57 61</file>
                 </tool>
             </inputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_mcu.c</name>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</name>
             <outputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 21</file>
+                    <file> 58</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 23</file>
+                    <file> 75</file>
                 </tool>
             </outputs>
             <inputs>
                 <tool>
                     <name>ICC8051</name>
-                    <file> 106 67 93 105 13 37 82</file>
+                    <file> 45 93 103 37 40 83 8 22 23 27 32 29 94 25 20 21 36 28 5 57 61</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</name>
+            <outputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 70</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 108</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICC8051</name>
+                    <file> 94 103 55 53 67</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\BLE_Broadcaster_cc2541em.d51</name>
+            <outputs>
+                <tool>
+                    <name>XLINK</name>
+                    <file> 107 62</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>XLINK</name>
+                    <file> 54 90 92 100 58 85 71 87 72 109 74 48 47 84 104 88 81 77 91 78 56 70 97 64 68</file>
                 </tool>
             </inputs>
         </file>

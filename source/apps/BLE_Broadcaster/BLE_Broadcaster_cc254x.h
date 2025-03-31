@@ -109,28 +109,36 @@ typedef struct deviceMap deviceMap;
 //#define MODETX
 
 #ifdef MODETX
-#define NODE_NUMBER 1
+#define NODE_NUMBER 0
 #endif
 
 #define PAYLOAD_LENGTH 26
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
-#define TOTAL_TIME 3000
+#define TOTAL_TIME 120
 
-#define OPERATION_MODE DAF
+#define DAF 1
+#define BNC 2
+#define DNC 3
+#define GDNC 4
+
+#define OPERATION_MODE BNC
 #define TOTAL_NODES 2
+#define TOTAL_TRANSMISSIONS 100
 
 #if TOTAL_NODES == 2
 #define ROWS 4
 #define COLS 2
+#define TIME_SLICES 4
 #elif TOTAL_NODES == 3
 #define ROWS 9
 #define COLS 3
+#define TIME_SLICES 9
 #endif
 
 extern volatile uint8 rfirqf1;
-extern deviceMap deviceList[3];
+extern deviceMap* deviceList[3];
 extern uint8 addressBytes[6];
-extern uint8 messages[3][PAYLOAD_LENGTH-1];
+extern uint8 messages[3][PAYLOAD_LENGTH-2];
 extern uint8 actedThisPhase;
 extern uint8 myNumber;
 extern uint8 phase;
@@ -138,11 +146,12 @@ extern uint8 transmissionDone;
 extern uint16 counter;
 extern uint8 messagesFlags[9];
 extern uint8 powerModeFlag;
-extern uint8 messageCounter;
 extern uint8 messageSent;
+extern uint16 numberOfTransmissions;
+extern uint8 receivedMask;
   
 extern uint8 codingMatrix[ROWS][COLS];
-extern uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-1];
+extern uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-2];
 extern double inverseCodingMatrix[COLS][ROWS];
 
 #endif

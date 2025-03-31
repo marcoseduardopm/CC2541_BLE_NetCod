@@ -24,29 +24,31 @@ void TurnLED(uint8 led)
 }
 
 void IncludeDevices()
-{
-  deviceMap nodeA, nodeB, nodeC;
+{ 
+  deviceMap* nodeA = (deviceMap*)malloc(sizeof(deviceMap));
+  deviceMap* nodeB = (deviceMap*)malloc(sizeof(deviceMap));
+  deviceMap* nodeC = (deviceMap*)malloc(sizeof(deviceMap));
   
   for(int i = 0; i < 6; i++)
-    nodeA.address[i] = 0xAA;
-  nodeA.number = 0;
-  nodeA.sequenceNumber = 0;
-  nodeA.totalPackages = 0;
-  nodeA.packageLosses = 0;
+    nodeA->address[i] = 0xAA;
+  nodeA->number = 0;
+  nodeA->sequenceNumber = 0;
+  nodeA->totalPackages = 0;
+  nodeA->packageLosses = 0;
   
   for(int i = 0; i < 6; i++)
-    nodeB.address[i] = 0xBB;
-  nodeB.number = 1;
-  nodeB.sequenceNumber = 0;
-  nodeB.totalPackages = 0;
-  nodeB.packageLosses = 0;
+    nodeB->address[i] = 0xBB;
+  nodeB->number = 1;
+  nodeB->sequenceNumber = 0;
+  nodeB->totalPackages = 0;
+  nodeB->packageLosses = 0;
   
   for(int i = 0; i < 6; i++)
-    nodeC.address[i] = 0xCC;
-  nodeC.number = 2;
-  nodeC.sequenceNumber = 0;
-  nodeC.totalPackages = 0;
-  nodeC.packageLosses = 0;
+    nodeC->address[i] = 0xCC;
+  nodeC->number = 2;
+  nodeC->sequenceNumber = 0;
+  nodeC->totalPackages = 0;
+  nodeC->packageLosses = 0;
 
   deviceList[0] = nodeA;
   deviceList[1] = nodeB;
@@ -57,12 +59,12 @@ void ClearMessages()
 {
   for(int i = 0; i < 3; i ++)
   {
-    for(int j = 0; j < PAYLOAD_LENGTH - 1; j++)
+    for(int j = 0; j < PAYLOAD_LENGTH-2; j++)
       messages[i][j] = 0;
   }
   for(int i = 0; i < ROWS; i++)
   {
-    for (int j = 0; j < PAYLOAD_LENGTH-1; j++)
+    for (int j = 0; j < PAYLOAD_LENGTH-2; j++)
       resultMatrix[i][j] = 0;
   }
   for(int i = 0; i < 9; i ++)
@@ -87,7 +89,7 @@ void GetMessagePayload(uint8* outputAddress, uint8* outputData)
 void CodingMatrixConfig()
 {
     
-#if OPERATION_MODE == DAF  
+#if OPERATION_MODE == DAF
 #if TOTAL_NODES == 2
   uint8 partialMatrix[4][2] = {1,0,0,1,0,1,1,0};
   for(int i = 0; i < 4; i++)
@@ -124,7 +126,7 @@ void CodingMatrixConfig()
 #endif
 }
 
-void Transmit(uint8 messageType, uint8* message)
+void Transmit(uint8 messageType, uint8 mask, uint8* message)
 {
   rfirqf1 = 0;
   
@@ -134,10 +136,11 @@ void Transmit(uint8 messageType, uint8* message)
     payload[i] = 0;
   
   payload[0] = messageType;
+  payload[1] = mask;
   
-  for(int i = 1; i < PAYLOAD_LENGTH; i++)
+  for(int i = 2; i < PAYLOAD_LENGTH; i++)
   {
-    payload[i] = message[i-1];
+    payload[i] = message[i-2];
   }
   
   halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);

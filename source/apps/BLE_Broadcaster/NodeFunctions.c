@@ -9,16 +9,16 @@
 
 uint8* PackMessage(uint32 seqNumber, char* message)
 {
-  uint8* newMessage = (uint8*)malloc(PAYLOAD_LENGTH-1*sizeof(uint8));
+  uint8* newMessage = (uint8*)malloc(PAYLOAD_LENGTH-2*sizeof(uint8));
   newMessage[0] = (uint8) seqNumber;
-  for(int i = 1; i < PAYLOAD_LENGTH-1; i++)
+  for(int i = 1; i < PAYLOAD_LENGTH-2; i++)
     newMessage[i] = (uint8) message[i-1];
   return newMessage;
 }
 
 void CopyMessage(uint8* destiny, uint8* source)
 {
- for(int i = 0; i < PAYLOAD_LENGTH-1; i++)
+ for(int i = 0; i < PAYLOAD_LENGTH-2; i++)
    destiny[i] = source[i];
 }
 
@@ -75,12 +75,13 @@ void Receive()
       GetMessagePayload(addressBytes,payload);
     
       uint8 messageType = payload[0];
+      uint8 mask = payload[1];
       
-      uint8 message[PAYLOAD_LENGTH-1];
+      uint8 message[PAYLOAD_LENGTH-2];
       
-      for(int i = 1; i < PAYLOAD_LENGTH; i++)
+      for(int i = 2; i < PAYLOAD_LENGTH; i++)
       {
-        message[i-1] = payload[i];
+        message[i-2] = payload[i];
       }
       if(messageType != NODE_NUMBER)
       {
@@ -91,10 +92,9 @@ void Receive()
           messagesFlags[0] = 1;
           if(NODE_NUMBER == 1)
           {
-             if(phase >= 2)
-               transmissionDone = 1;
+             //if(phase >= 2)
+               //transmissionDone = 1;
              phase = 0;
-             //printf("0 %d %d\n",phase, counter);
              counter = (TOTAL_TIME/2 - TOTAL_TIME/3);
           }
           else if(NODE_NUMBER == 2)
@@ -104,7 +104,6 @@ void Receive()
           }
           break;
         case 1:
-          //printf("1 %d %d\n",phase, counter);
           CopyMessage(messages[1],message);
           messagesFlags[1] = 1;
           break;
@@ -123,14 +122,6 @@ void Receive()
         case 5:
           CopyMessage(messages[2],message);
           messagesFlags[2] = 1;
-          break;
-        case 10:
-          //printf("10 %d %d\n",phase, counter);
-          messagesFlags[5] = 1;
-          break;
-        case 11:
-          //printf("11 %d %d\n",phase, counter);
-          messagesFlags[6] = 1;
           break;
         case 255:
           phase = 0;
@@ -168,12 +159,13 @@ void MultiplyMatrix(int matrix1Lines, int matrix1Columns, int matrix2Lines, int 
 void DAF2()
 {
   uint8* line;
+  uint8 mask = 0xFF;
 #if NODE_NUMBER == 0
  if(phase == 0)
  {
   if(!messageSent)
   {
-    Transmit(0,messages[0]);
+    Transmit(0,mask,messages[0]);
     messageSent = 1;
   }
  }
@@ -181,13 +173,13 @@ void DAF2()
  {
    if(messagesFlags[1])
     {
-      MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
+      MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-2);
       line = resultMatrix[2];
-      Transmit(10,line);
+      Transmit(10,mask,line);
     }
     else
     {
-      Transmit(3,messages[NODE_NUMBER]);
+      Transmit(3,mask,messages[NODE_NUMBER]);
     }
  }
 #elif NODE_NUMBER == 1
@@ -195,65 +187,64 @@ void DAF2()
    {
      if(!messageSent)
     {
-      Transmit(1,messages[1]);
+      Transmit(1,mask,messages[1]);
       messageSent = 1;
     }
-    Transmit(1,messages[1]);
    }
    else if(phase == 3)
    {
      if(messagesFlags[0])
       {
-        MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
+        MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-2);
         line = resultMatrix[3];
-        Transmit(11,line);
+        Transmit(11,mask,line);
       }
       else
       {
-        Transmit(4,messages[1]);
+        Transmit(4,mask,messages[1]);
       }
    }
 #endif
 }
 
+
 void BNC2()
 {
   uint8* line;
+  uint8 mask = 0xFF;
 #if NODE_NUMBER == 0
  if(phase == 0)
  {
-  Transmit(0,messages[0]);
+  if(!messageSent)
+  {
+    Transmit(0,mask,messages[0]);
+    messageSent = 1;
+  }
  }
  else if(phase == 2)
  {
-   if(messagesFlags[1])
-    {
-      MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
-      line = resultMatrix[2];
-      Transmit(10,line);
-    }
-    else
-    {
-      Transmit(3,messages[NODE_NUMBER]);
-    }
+   if(!messagesFlags[1])
+      mask &= 0xFD;
+   MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-2);
+   line = resultMatrix[2];
+   Transmit(10,mask,line);
  }
 #elif NODE_NUMBER == 1
    if(phase == 1)
    {
-    Transmit(1,messages[1]);
+     if(!messageSent)
+    {
+      Transmit(1,mask,messages[1]);
+      messageSent = 1;
+    }
    }
    else if(phase == 3)
    {
-     if(messagesFlags[0])
-      {
-        MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-1);
-        line = resultMatrix[3];
-        Transmit(11,line);
-      }
-      else
-      {
-        Transmit(4,messages[1]);
-      }
+     if(!messagesFlags[0])
+        mask &= 0xFE;
+     MultiplyMatrix(4,2,2,PAYLOAD_LENGTH-2);
+     line = resultMatrix[3];
+     Transmit(11,mask,line);
    }
 #endif
 }
