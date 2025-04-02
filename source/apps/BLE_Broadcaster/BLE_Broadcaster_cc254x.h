@@ -79,17 +79,6 @@
 //#define RUN_SUCCESS           0
 //#define RUN_ERROR             9
 
-struct deviceMap
-{
-  uint8 address[6];
-  int number;
-  uint8 sequenceNumber;
-  uint32 totalPackages;
-  uint32 packageLosses;
-};
-
-typedef struct deviceMap deviceMap;
-
 /*
 * Use the same sync word that is used in SmartRFStudio.
 *
@@ -109,21 +98,21 @@ typedef struct deviceMap deviceMap;
 //#define MODETX
 
 #ifdef MODETX
-#define NODE_NUMBER 0
+#define NODE_NUMBER 2
 #endif
 
 #define PAYLOAD_LENGTH 26
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
-#define TOTAL_TIME 120
+#define TOTAL_TIME 240
 
 #define DAF 1
 #define BNC 2
 #define DNC 3
 #define GDNC 4
 
-#define OPERATION_MODE BNC
-#define TOTAL_NODES 2
-#define TOTAL_TRANSMISSIONS 100
+#define OPERATION_MODE DNC
+#define TOTAL_NODES 3
+#define TOTAL_TRANSMISSIONS 250
 
 #if TOTAL_NODES == 2
 #define ROWS 4
@@ -135,23 +124,34 @@ typedef struct deviceMap deviceMap;
 #define TIME_SLICES 9
 #endif
 
+struct deviceMap
+{
+  uint8 address[6];
+  int number;
+  uint16 receivedSequenceNumber;
+  uint16 expectedSequenceNumber;
+  uint32 totalPackages;
+  uint32 packageLosses;
+  uint8 receivedMessages[TOTAL_TRANSMISSIONS + 1];
+};
+
+typedef struct deviceMap deviceMap;
+
 extern volatile uint8 rfirqf1;
-extern deviceMap* deviceList[3];
+extern deviceMap deviceList[COLS];
 extern uint8 addressBytes[6];
-extern uint8 messages[3][PAYLOAD_LENGTH-2];
+extern uint8 messages[COLS][(PAYLOAD_LENGTH-2)/2];
 extern uint8 actedThisPhase;
-extern uint8 myNumber;
+extern uint16 myNumber;
 extern uint8 phase;
 extern uint8 transmissionDone;
 extern uint16 counter;
 extern uint8 messagesFlags[9];
-extern uint8 powerModeFlag;
-extern uint8 messageSent;
 extern uint16 numberOfTransmissions;
 extern uint8 receivedMask;
   
 extern uint8 codingMatrix[ROWS][COLS];
-extern uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-2];
+extern uint16 resultMatrix[ROWS][(PAYLOAD_LENGTH-2)/2];
 extern double inverseCodingMatrix[COLS][ROWS];
 
 #endif

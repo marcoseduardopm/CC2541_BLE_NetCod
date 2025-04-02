@@ -70,28 +70,25 @@ uint8 ledStatus = 0;
 uint8 transmissionDone = 0;
 uint8 actedThisPhase = 0;
 
-uint8 myNumber = 0;
+uint16 myNumber = 0;
 uint8 phase = 0;
 
 uint8 addressBytes[6];
-uint8 messages[3][PAYLOAD_LENGTH-2];
+uint8 messages[COLS][(PAYLOAD_LENGTH-2)/2];
 uint8 messagesFlags[9];
 
 uint8 receivedMask = 0;
 
-deviceMap* deviceList[3];
+deviceMap deviceList[COLS];
 
-uint8 messageSent = 0;
 uint16 numberOfTransmissions = 0;
 
 uint8 codingMatrix[ROWS][COLS];
 double codingMatrixDouble[ROWS][COLS];
 double inverseCodingMatrix[COLS][ROWS];
-uint8 resultMatrix[ROWS][PAYLOAD_LENGTH-2];
+uint16 resultMatrix[ROWS][(PAYLOAD_LENGTH-2)/2];
   
 uint8 timeSlices = TIME_SLICES;
-
-uint8 powerModeFlag;
 
 /*******************************************************************************
 * LOCAL FUNCTIONS
@@ -178,10 +175,10 @@ int main(void) {
       MCU_IO_INPUT(2, i, MCU_IO_PULLDOWN);
     }
 
-    sleepMode(1000, 0); //sleep 
+    //sleepMode(1000, 0); //sleep 
     //Turn the LED ON
-    TurnLED(1);
-    sleepMode(200, 0); //sleep 
+    //TurnLED(1);
+    //sleepMode(200, 0); //sleep 
     //Ensure that the P12 is at input (high impedance)
     TurnLED(0);
     
@@ -200,7 +197,7 @@ int main(void) {
 #endif
 
     for(int i = 0; i < 6; i++)
-      addressBytes[i] = deviceList[NODE_NUMBER]->address[i];
+      addressBytes[i] = deviceList[NODE_NUMBER].address[i];
     
     while(!ReceiveInitSignal()) {}
     
@@ -227,12 +224,11 @@ int main(void) {
       myNumber++;
       ClearMessages();
       transmissionDone = 0;
-      messageSent = 0;
     }
     
 #else
     
-    uint8* startMessage = malloc(PAYLOAD_LENGTH*sizeof(uint8));
+    uint16* startMessage = malloc(PAYLOAD_LENGTH*sizeof(uint16));
     Transmit(255,0xFF,startMessage);
     free(startMessage);
     
@@ -260,13 +256,13 @@ int main(void) {
       }
       
       InvertMatrix((double*)codingMatrixDouble,(double*)inverseCodingMatrix);
-      GetResults(COLS,ROWS,ROWS,PAYLOAD_LENGTH-2);
+      GetResults(COLS,ROWS,ROWS,(PAYLOAD_LENGTH-2)/2);
       
-      //if(!(messagesFlags[0]&&messagesFlags[1]&&messagesFlags[2]&&messagesFlags[3]))
-        //PrintMatrix((uint8*)messages,2,PAYLOAD_LENGTH-2);
-      //printf("%d %d\n", deviceList[0].sequenceNumber, deviceList[1].sequenceNumber);
       ClearMessages();
       transmissionDone = 0;
+      
+      for(int i = 0; i < COLS; i++)
+        deviceList[i].expectedSequenceNumber = deviceList[i].expectedSequenceNumber + 1;
       
       if(numberOfTransmissions >= TOTAL_TRANSMISSIONS)
       {
@@ -274,11 +270,10 @@ int main(void) {
         
         for(int i = 0; i < 3; i ++)
         {
-          deviceList[i]->packageLosses = deviceList[i]->packageLosses + (TOTAL_TRANSMISSIONS - deviceList[i]->sequenceNumber - 1);
           printf("Node %d: ",i);
-          printf("%d transmissions, ",(int)deviceList[i]->totalPackages);
-          printf("%d packages lost, ",(int)deviceList[i]->packageLosses);
-          printf("sequence number = %d\n",(int)deviceList[i]->sequenceNumber);
+          printf("%d transmissions, ",(int)deviceList[i].totalPackages);
+          printf("%d packages lost, ",(int)deviceList[i].packageLosses);
+          printf("sequence number = %d\n",(int)deviceList[i].receivedSequenceNumber);
         }
         return 0;
       }

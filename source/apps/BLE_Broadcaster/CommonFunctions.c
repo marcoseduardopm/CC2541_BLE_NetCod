@@ -2,7 +2,8 @@
 #include "BLE_Broadcaster_cc254x.h"
 #include <stdio.h>
 
-void PrintMatrix(uint8* matrix, int lines, int columns)
+
+/*void PrintMatrix(uint8* matrix, int lines, int columns)
 {
   for(int i = 0; i < lines; i++)
   {
@@ -13,7 +14,7 @@ void PrintMatrix(uint8* matrix, int lines, int columns)
     printf("\n");
   }
   printf("\n\n\n");
-}
+}*/
 
 void TurnLED(uint8 led)
 {
@@ -24,47 +25,52 @@ void TurnLED(uint8 led)
 }
 
 void IncludeDevices()
-{ 
-  deviceMap* nodeA = (deviceMap*)malloc(sizeof(deviceMap));
-  deviceMap* nodeB = (deviceMap*)malloc(sizeof(deviceMap));
-  deviceMap* nodeC = (deviceMap*)malloc(sizeof(deviceMap));
+{   
+  for(int i = 0; i < 6; i++)
+    deviceList[0].address[i] = 0xAA;
+  deviceList[0].number = 0;
+  deviceList[0].receivedSequenceNumber = 0;
+  deviceList[0].expectedSequenceNumber = 0;
+  deviceList[0].totalPackages = 0;
+  deviceList[0].packageLosses = 0; 
   
   for(int i = 0; i < 6; i++)
-    nodeA->address[i] = 0xAA;
-  nodeA->number = 0;
-  nodeA->sequenceNumber = 0;
-  nodeA->totalPackages = 0;
-  nodeA->packageLosses = 0;
-  
+    deviceList[1].address[i] = 0xBB;
+  deviceList[1].number = 1;
+  deviceList[1].receivedSequenceNumber = 0;
+  deviceList[1].expectedSequenceNumber = 0;
+  deviceList[1].totalPackages = 0;
+  deviceList[1].packageLosses = 0;
+#if TOTAL_NODES == 3
   for(int i = 0; i < 6; i++)
-    nodeB->address[i] = 0xBB;
-  nodeB->number = 1;
-  nodeB->sequenceNumber = 0;
-  nodeB->totalPackages = 0;
-  nodeB->packageLosses = 0;
-  
-  for(int i = 0; i < 6; i++)
-    nodeC->address[i] = 0xCC;
-  nodeC->number = 2;
-  nodeC->sequenceNumber = 0;
-  nodeC->totalPackages = 0;
-  nodeC->packageLosses = 0;
-
-  deviceList[0] = nodeA;
-  deviceList[1] = nodeB;
-  deviceList[2] = nodeC;
+    deviceList[2].address[i] = 0xCC;
+  deviceList[2].number = 2;
+  deviceList[2].receivedSequenceNumber = 0;
+  deviceList[2].expectedSequenceNumber = 0;
+  deviceList[2].totalPackages = 0;
+  deviceList[2].packageLosses = 0;
+#endif
+      
+  for(int i = 0; i < TOTAL_TRANSMISSIONS; i++)
+  {
+      deviceList[0].receivedMessages[i] = 0;
+      deviceList[1].receivedMessages[i] = 0;
+#if TOTAL_NODES == 3
+      deviceList[2].receivedMessages[i] = 0;
+#endif
+  }
 }
 
 void ClearMessages()
 {
-  for(int i = 0; i < 3; i ++)
+  for(int i = 0; i < COLS; i ++)
   {
-    for(int j = 0; j < PAYLOAD_LENGTH-2; j++)
+    for(int j = 0; j < (PAYLOAD_LENGTH-2)/2; j++)
       messages[i][j] = 0;
   }
   for(int i = 0; i < ROWS; i++)
   {
-    for (int j = 0; j < PAYLOAD_LENGTH-2; j++)
+    for (int j = 0; j < (PAYLOAD_LENGTH-2)/2; j++)
       resultMatrix[i][j] = 0;
   }
   for(int i = 0; i < 9; i ++)
@@ -98,7 +104,12 @@ void CodingMatrixConfig()
       codingMatrix[i][j] = partialMatrix[i][j];
   }
 #elif TOTAL_NODES == 3
-  
+  uint8 partialMatrix[9][3] = {1,0,0,0,1,0,0,0,1,0,1,0,0,0,1,1,0,0,0,0,1,1,0,0,0,1,0};
+  for(int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 3; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #endif
 #elif OPERATION_MODE == BNC
 #if TOTAL_NODES == 2
@@ -109,24 +120,49 @@ void CodingMatrixConfig()
       codingMatrix[i][j] = partialMatrix[i][j];
   }
 #elif TOTAL_NODES == 3
-  
+  uint8 partialMatrix[9][3] = {1,0,0,0,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+  for(int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 3; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #endif
 #elif OPERATION_MODE == DNC
 #if TOTAL_NODES == 2
-  
+  uint8 partialMatrix[4][2] = {1,0,0,1,1,1,1,2};
+  for(int i = 0; i < 4; i++)
+  {
+    for(int j = 0; j < 2; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #elif TOTAL_NODES == 3
-  
+  uint8 partialMatrix[9][3] = {1,0,0,0,1,0,0,0,1,1,1,5,1,2,4,2,3,1,3,13,1,4,11,15,7,5,14};
+  for(int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 3; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #endif
 #elif OPERATION_MODE == GDNC
 #if TOTAL_NODES == 2
-  
+  uint8 partialMatrix[4][2] = {1,0,0,1,3,2,2,3};
+  for(int i = 0; i < 4; i++)
+  {
+    for(int j = 0; j < 2; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #elif TOTAL_NODES == 3
-  
+  uint8 partialMatrix[9][3] = {1,0,0,0,1,0,0,0,1,15,8,6,11,5,15,1,1,1,14,8,7,5,13,9,11,4,14};
+  for(int i = 0; i < 9; i++)
+  {
+    for(int j = 0; j < 3; j ++)
+      codingMatrix[i][j] = partialMatrix[i][j];
+  }
 #endif
 #endif
 }
 
-void Transmit(uint8 messageType, uint8 mask, uint8* message)
+void Transmit(uint8 messageType, uint8 mask, uint16* message)
 {
   rfirqf1 = 0;
   
@@ -138,9 +174,12 @@ void Transmit(uint8 messageType, uint8 mask, uint8* message)
   payload[0] = messageType;
   payload[1] = mask;
   
-  for(int i = 2; i < PAYLOAD_LENGTH; i++)
+  for(int i = 2; i < PAYLOAD_LENGTH; i+=2)
   {
-    payload[i] = message[i-2];
+    uint8 messageHigh = message[(i-2)/2] >> 8; 
+    uint8 messageLow = message[(i-2)/2] & 0xFF;
+    payload[i] = messageHigh;
+    payload[i+1] = messageLow;
   }
   
   halRfBroadcastLoadPacket(payload, PAYLOAD_LENGTH, addressBytes);
@@ -154,106 +193,4 @@ void Transmit(uint8 messageType, uint8 mask, uint8* message)
   halRfCommand(CMD_TXFIFO_RESET);
 
   rfirqf1 = 0;  
-}
-
-void sleepMode(uint32 sleepDurationMs, uint8 afterLastRecPackage)
-{ 
-#if(POWER_SAVING)
-    //uint8 tuneTimeoutFlag = 0, ovf10Bit1 = 0, ovf10Bit2 = 0;
-    uint16 timeStampFine, fine;
-    uint32 timeStampCoarse, coarse;
-    int32 sleepDuration;
-        //  This part illustrate one way of implementing sleep functionality.
-        //   This is not fully optimized and can be implemented in several ways.
-        //
-        //   The main procedure here is:
-        //
-        //       Get the captured timestamp from the start of the last received packet.
-        //       Get the current time from timer2.
-        //       Calculate the time delta and subtract that from the default sleep duration.
-        //       Set the sleep time duration.
-        //       Chose which power mode to enter (or abort if the sleep duration is to short).
-        //       Enable Sleep Timer interrupt.
-        //       Enable Global Interrupt (EA).
-        //       Enter Power Mode.
-        //       Wake up on sleep timer isr.
-        //       Wait until 32 MHz XTAL is stable.
-        //       Sync up the timer2 value witht he low speed 32 kHz sleep timer clock.
-        //
-        //  Set sleep duration to default (approx. 9 ms) and subtract the
-        //  execution time since last received packet. 
-        //sleepDuration = 290; //9ms
-        sleepDuration = sleepDurationMs*32; //conversion to ms
-        if(afterLastRecPackage)
-        {
-          // Retrieve captured timestamp from start of received packet (SOP).
-          halTimer2GetCapturedTime(&timeStampFine, &timeStampCoarse);
-
-          // Retrieve current time from timer 2 (TIME).
-          halTimer2GetFullCurrentTime(&fine, &coarse);
-
-          //  Find time delta between SOP and TIME (32 MHz ticks). This calcuation
-          //  assumes that the timer2 base period is set to 1 ms (0x7D00). 
-          coarse -= timeStampCoarse;
-          if( fine < timeStampFine ) {
-            fine += (0x7D00 - timeStampFine);
-            coarse--;
-          }
-          else {
-            fine -=  timeStampFine;
-          }
-          
-          //  Convert the 32 MHz ticks to 32 kHz ticks. The conversion has some
-          //  inaccuracy as it ignores the low speed clock setting. The CC2541
-          //  and CC2545 also has an optional low speed crystal oscillator which
-          //  has a slightly different frequency than the RC oscillator:
-          //  LS-XOSC: 32.768 kHz
-          //  LS-RCOSC: 32.753 kHz.
-          
-          //subtract the time difference between the last rec packet and now
-          //from the sleep duration
-          sleepDuration -= (uint32) ((fine/977) + (32*coarse) + 32);
-        }
-        
-        if(sleepDuration < 32) {
-            // If sleep duration is less than 1 ms, do not enter sleep.
-            powerModeFlag = 0;
-        }
-        else if (sleepDuration < 100) {
-            // If sleep duration is less than 3 ms, use PM1 instead of PM2.
-            powerModeFlag = 1;
-        }
-        else {
-            powerModeFlag = 2;
-        }
-
-        if(powerModeFlag) {
-            // Set the sleep time compare value.
-            halSleepSetSleepTimer(sleepDuration);
-
-            // CC2541/45 has automatic sync between 32 kHz ST and timer2.
-            halTimer2Stop(1);
-
-            // Disable the sleep timer interrupt.
-            halSleepEnableInterrupt();
-
-            // Make Sure Global Interrupt is enabled.
-            halIntOn();
-
-            // Set LED3 indicate entering power mode function.
-            //halLedSet(3);
-
-            // No more pillow fights, time for bed.
-            halSleepEnterPowerMode(powerModeFlag);
-
-            // Clear LED3 indicate exit from power mode function.
-            //halLedClear(3);
-
-            // Disable the sleep timer interrupt.
-            halSleepDisableInterrupt();
-
-            // CC2541/45 has automatic sync between 32 kHz ST and timer2.
-            halTimer2Start(1);//halTimer2Start(1);
-        }
-#endif
 }

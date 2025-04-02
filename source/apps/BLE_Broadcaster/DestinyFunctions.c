@@ -10,12 +10,12 @@
 
 uint8 CheckCadastredAddress(uint8* address)
 {
-  for(int i = 0; i < 3; i++)
+  for(int i = 0; i < COLS; i++)
   {
     uint8 cadastred = 1;
     for(int j = 0; j < 6; j++)
     {
-      if(address[j] != deviceList[i]->address[j])
+      if(address[j] != deviceList[i].address[j])
         cadastred = 0;
     }
     if(cadastred)
@@ -77,16 +77,20 @@ void GetResults(int matrix1Lines, int matrix1Columns, int matrix2Lines, int matr
       }
     }
   }
-  for(int i = 0; i < 3; i++)
+  for(int i = 0; i < COLS; i++)
   {
-    if(!EmptyLine(messages[i], PAYLOAD_LENGTH-2))
+    if(!EmptyLine(messages[i], (PAYLOAD_LENGTH-2)/2))
     {
-      uint8 seqNumber = messages[i][0];
-      int difference = deviceList[i]->sequenceNumber != 0 ? seqNumber - deviceList[i]->sequenceNumber - 1 : 0;
-      deviceList[i]->sequenceNumber = seqNumber;
-      deviceList[i]->packageLosses = deviceList[i]->packageLosses + difference;
-      deviceList[i]->totalPackages++;
+      uint8 seqNumber = (uint8)messages[i][0];
+      deviceList[i].receivedSequenceNumber = seqNumber;
+      deviceList[i].totalPackages++;
+      deviceList[i].receivedMessages[numberOfTransmissions] = seqNumber;
+      
+      if(seqNumber != deviceList[i].expectedSequenceNumber)
+        deviceList[i].packageLosses = deviceList[i].packageLosses + 1;
     }
+    else
+        deviceList[i].packageLosses = deviceList[i].packageLosses + 1;
   }
 }
 
@@ -108,7 +112,7 @@ void ZeroField(uint8* line, int size)
   }
 }
 
-void CopyMatrixLine(uint8* line, int matrixColumns, int lineNumber)
+void CopyMatrixLine(uint16* line, int matrixColumns, int lineNumber)
 {
   for(int i = 0; i < matrixColumns; i++)
       resultMatrix[lineNumber][i] = line[i];
@@ -137,89 +141,85 @@ void Receive()
         uint8 messageType = payload[0];
         receivedMask = payload[1];
         
-        uint8 message[PAYLOAD_LENGTH-2];
+        uint16 message[(PAYLOAD_LENGTH-2)/2];
         
-        for(int i = 2; i < PAYLOAD_LENGTH; i++)
+        for(int i = 2; i < PAYLOAD_LENGTH; i+=2)
         {
-          message[i-2] = payload[i];
+          message[(i-2)/2] = (((uint16)payload[i]) << 8) | payload[i+1];
         }
       
         switch(messageType)
         {
         case 0:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,0);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
           messagesFlags[0] = 1;
-          counter = TOTAL_TIME/2;
-          phase = 0;
+          //counter = TOTAL_TIME/2;
+          //phase = 0;
           break;
         case 1:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,1);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
           messagesFlags[1] = 1;
-          counter = TOTAL_TIME/3;
-          phase = 1;
           break;
         case 2:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,2);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
           messagesFlags[2] = 1;
-          counter = TOTAL_TIME/6;
-          phase = 2;
           break;
         case 3:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,0);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
           messagesFlags[0] = 1;
           break;
         case 4:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,1);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
           messagesFlags[1] = 1;
           break;
         case 5:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,2);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
           messagesFlags[2] = 1;
           break;
         case 10:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,2);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
           messagesFlags[2] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[2],2);
           break;
         case 11:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,3);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
           messagesFlags[3] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[3],2);
           break;
         case 20:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,3);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
           messagesFlags[3] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[3],3);
           break;
         case 21:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,4);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,4);
           messagesFlags[4] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[4],3);
           break;
         case 22:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,5);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,5);
           messagesFlags[5] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[5],3);
           break;
         case 23:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,6);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,6);
           messagesFlags[6] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[6],3);
           break;
         case 24:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,7);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,7);
           messagesFlags[7] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[7],3);
           break;
         case 25:
-          CopyMatrixLine(message,PAYLOAD_LENGTH-2,8);
+          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,8);
           messagesFlags[8] = 1;
           if(receivedMask != 0xFF)
             ZeroField(codingMatrix[8],3);

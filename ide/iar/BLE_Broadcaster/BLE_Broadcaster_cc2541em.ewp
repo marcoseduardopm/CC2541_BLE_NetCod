@@ -175,7 +175,7 @@
                 </option>
                 <option>
                     <name>General Xdata Stack Size</name>
-                    <state>0x100</state>
+                    <state>0x500</state>
                 </option>
                 <option>
                     <name>General Ext Stack Size</name>
