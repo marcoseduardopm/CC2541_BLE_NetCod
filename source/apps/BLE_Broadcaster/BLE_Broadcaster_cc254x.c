@@ -58,6 +58,7 @@
 #include "CommonFunctions.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 volatile uint8 rfirqf1 = 0;
 extern uint8 RadioTimeoutFlag;
@@ -229,7 +230,10 @@ int main(void) {
 #else
     
     uint16* startMessage = malloc(PAYLOAD_LENGTH*sizeof(uint16));
-    Transmit(255,0xFF,startMessage);
+    for(int i = 0; i < 6; i++)
+    {
+      Transmit(255,0xFF,startMessage);
+    }
     free(startMessage);
     
     //Set Timer 1 to interrupt every 1 ms
@@ -265,15 +269,17 @@ int main(void) {
         deviceList[i].expectedSequenceNumber = deviceList[i].expectedSequenceNumber + 1;
       
       if(numberOfTransmissions >= TOTAL_TRANSMISSIONS)
-      {
+      {      
         printf("Results:\n");
         
-        for(int i = 0; i < 3; i ++)
+        for(int i = 0; i < COLS; i ++)
         {
-          printf("Node %d: ",i);
-          printf("%d transmissions, ",(int)deviceList[i].totalPackages);
-          printf("%d packages lost, ",(int)deviceList[i].packageLosses);
-          printf("sequence number = %d\n",(int)deviceList[i].receivedSequenceNumber);
+          deviceList[i].rssi = (int8)(log10(deviceList[i].rssiSum / deviceList[i].numberOfTransmissions)*10);
+          printf("Node %d:\n",i);
+          printf("%d messages decoded from a total of %d messages\n",(int)deviceList[i].totalPackages, TOTAL_TRANSMISSIONS);
+          printf("%d messages lost\n",(int)deviceList[i].packageLosses);
+          printf("%d total packages arrived from a total of %d\n",(int)deviceList[i].numberOfTransmissions,TOTAL_TRANSMISSIONS*COLS);
+          printf("mean RSSI: %d dBm\n\n",(int)deviceList[i].rssi);
         }
         return 0;
       }

@@ -5,6 +5,7 @@
 #include "hal_rf_broadcast.h"
 #include "stdio.h"
 #include "pseudo_inverse.h"
+#include <math.h>
 
 #ifndef MODETX
 
@@ -83,11 +84,12 @@ void GetResults(int matrix1Lines, int matrix1Columns, int matrix2Lines, int matr
     {
       uint8 seqNumber = (uint8)messages[i][0];
       deviceList[i].receivedSequenceNumber = seqNumber;
-      deviceList[i].totalPackages++;
       deviceList[i].receivedMessages[numberOfTransmissions] = seqNumber;
       
       if(seqNumber != deviceList[i].expectedSequenceNumber)
         deviceList[i].packageLosses = deviceList[i].packageLosses + 1;
+      else
+        deviceList[i].totalPackages++;
     }
     else
         deviceList[i].packageLosses = deviceList[i].packageLosses + 1;
@@ -133,97 +135,135 @@ void Receive()
       uint8 addressBytes[6];     
       uint8 payload[PAYLOAD_LENGTH];
       
-      GetMessagePayload(addressBytes,payload);
-      
-      if(CheckCadastredAddress(addressBytes))
+      if(GetMessagePayload(addressBytes,payload))
       {
-      
-        uint8 messageType = payload[0];
-        receivedMask = payload[1];
+        if(CheckCadastredAddress(addressBytes))
+        {        
+          uint8 messageType = payload[0];
+          receivedMask = payload[1];
+          
+          uint16 message[(PAYLOAD_LENGTH-2)/2];
+          
+          for(int i = 2; i < PAYLOAD_LENGTH; i+=2)
+          {
+            message[(i-2)/2] = (((uint16)payload[i]) << 8) | payload[i+1];
+          }
         
-        uint16 message[(PAYLOAD_LENGTH-2)/2];
-        
-        for(int i = 2; i < PAYLOAD_LENGTH; i+=2)
-        {
-          message[(i-2)/2] = (((uint16)payload[i]) << 8) | payload[i+1];
-        }
-      
-        switch(messageType)
-        {
-        case 0:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
-          messagesFlags[0] = 1;
-          //counter = TOTAL_TIME/2;
-          //phase = 0;
-          break;
-        case 1:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
-          messagesFlags[1] = 1;
-          break;
-        case 2:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
-          messagesFlags[2] = 1;
-          break;
-        case 3:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
-          messagesFlags[0] = 1;
-          break;
-        case 4:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
-          messagesFlags[1] = 1;
-          break;
-        case 5:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
-          messagesFlags[2] = 1;
-          break;
-        case 10:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
-          messagesFlags[2] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[2],2);
-          break;
-        case 11:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
-          messagesFlags[3] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[3],2);
-          break;
-        case 20:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
-          messagesFlags[3] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[3],3);
-          break;
-        case 21:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,4);
-          messagesFlags[4] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[4],3);
-          break;
-        case 22:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,5);
-          messagesFlags[5] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[5],3);
-          break;
-        case 23:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,6);
-          messagesFlags[6] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[6],3);
-          break;
-        case 24:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,7);
-          messagesFlags[7] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[7],3);
-          break;
-        case 25:
-          CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,8);
-          messagesFlags[8] = 1;
-          if(receivedMask != 0xFF)
-            ZeroField(codingMatrix[8],3);
-          break;
+          switch(messageType)
+          {
+          case 0:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
+            messagesFlags[0] = 1;
+            deviceList[0].numberOfTransmissions = deviceList[0].numberOfTransmissions + 1;
+            deviceList[0].rssiSum = deviceList[0].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            //counter = TOTAL_TIME/2;
+            //phase = 0;
+            break;
+          case 1:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
+            messagesFlags[1] = 1;
+            deviceList[1].numberOfTransmissions = deviceList[1].numberOfTransmissions + 1;
+            deviceList[1].rssiSum = deviceList[1].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            //counter = TOTAL_TIME/3;
+            //phase = 1;
+            break;
+  #if TOTAL_NODES == 3
+          case 2:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
+            messagesFlags[2] = 1;
+            deviceList[2].numberOfTransmissions = deviceList[2].numberOfTransmissions + 1;
+            deviceList[2].rssiSum = deviceList[2].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            //counter = TOTAL_TIME/6;
+            //phase = 2;
+            break;
+  #endif
+          case 3:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,0);
+            messagesFlags[0] = 1;
+            deviceList[0].numberOfTransmissions = deviceList[0].numberOfTransmissions + 1;
+            deviceList[0].rssiSum = deviceList[0].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            break;
+          case 4:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,1);
+            messagesFlags[1] = 1;
+            deviceList[1].numberOfTransmissions = deviceList[1].numberOfTransmissions + 1;
+            deviceList[1].rssiSum = deviceList[1].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            break;
+  #if TOTAL_NODES == 3
+          case 5:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
+            messagesFlags[2] = 1;
+            deviceList[2].numberOfTransmissions = deviceList[2].numberOfTransmissions + 1;
+            deviceList[2].rssiSum = deviceList[2].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            break;
+  #endif
+          case 10:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,2);
+            messagesFlags[2] = 1;
+            deviceList[0].numberOfTransmissions = deviceList[0].numberOfTransmissions + 1;
+            deviceList[0].rssiSum = deviceList[0].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[2],2);
+            break;
+          case 11:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
+            messagesFlags[3] = 1;
+            deviceList[1].numberOfTransmissions = deviceList[1].numberOfTransmissions + 1;
+            deviceList[1].rssiSum = deviceList[1].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[3],2);
+            break;
+          case 20:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,3);
+            messagesFlags[3] = 1;
+            deviceList[0].numberOfTransmissions = deviceList[0].numberOfTransmissions + 1;
+            deviceList[0].rssiSum = deviceList[0].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[3],3);
+            break;
+          case 21:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,4);
+            messagesFlags[4] = 1;
+            deviceList[0].numberOfTransmissions = deviceList[0].numberOfTransmissions + 1;
+            deviceList[0].rssiSum = deviceList[0].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[4],3);
+            break;
+          case 22:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,5);
+            messagesFlags[5] = 1;
+            deviceList[1].numberOfTransmissions = deviceList[1].numberOfTransmissions + 1;
+            deviceList[1].rssiSum = deviceList[1].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[5],3);
+            break;
+          case 23:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,6);
+            messagesFlags[6] = 1;
+            deviceList[1].numberOfTransmissions = deviceList[1].numberOfTransmissions + 1;
+            deviceList[1].rssiSum = deviceList[1].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[6],3);
+            break;
+  #if TOTAL_NODES == 3
+          case 24:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,7);
+            messagesFlags[7] = 1;
+            deviceList[2].numberOfTransmissions = deviceList[2].numberOfTransmissions + 1;
+            deviceList[2].rssiSum = deviceList[2].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[7],3);
+            break;
+          case 25:
+            CopyMatrixLine(message,(PAYLOAD_LENGTH-2)/2,8);
+            messagesFlags[8] = 1;
+            deviceList[2].numberOfTransmissions = deviceList[2].numberOfTransmissions + 1;
+            deviceList[2].rssiSum = deviceList[2].rssiSum + pow(10, (double)halRfGetLastRssi()/10.0);
+            if(receivedMask != 0xFF)
+              ZeroField(codingMatrix[8],3);
+            break;
+  #endif
+          }
         }
       }
     }

@@ -98,11 +98,12 @@
 //#define MODETX
 
 #ifdef MODETX
-#define NODE_NUMBER 2
+#define NODE_NUMBER 1
 #endif
 
 #define PAYLOAD_LENGTH 26
 #define CHANNEL BLE_BROADCAST_CHANNEL_37
+//#define CHANNEL 24
 #define TOTAL_TIME 240
 
 #define DAF 1
@@ -110,9 +111,9 @@
 #define DNC 3
 #define GDNC 4
 
-#define OPERATION_MODE DNC
-#define TOTAL_NODES 3
-#define TOTAL_TRANSMISSIONS 250
+#define OPERATION_MODE GDNC
+#define TOTAL_NODES 2
+#define TOTAL_TRANSMISSIONS 10
 
 #if TOTAL_NODES == 2
 #define ROWS 4
@@ -132,6 +133,9 @@ struct deviceMap
   uint16 expectedSequenceNumber;
   uint32 totalPackages;
   uint32 packageLosses;
+  uint32 numberOfTransmissions;
+  float rssiSum;
+  int8 rssi;
   uint8 receivedMessages[TOTAL_TRANSMISSIONS + 1];
 };
 

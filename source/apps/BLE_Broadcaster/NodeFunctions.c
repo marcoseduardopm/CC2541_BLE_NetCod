@@ -109,10 +109,30 @@ void Receive()
         case 1:
           CopyMessage(messages[1],message);
           messagesFlags[1] = 1;
+          /*if(NODE_NUMBER == 0)
+          {
+             phase = 0;
+             counter = (TOTAL_TIME + TOTAL_TIME/3 - TOTAL_TIME/2);
+          }
+          else if(NODE_NUMBER == 2)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME/3 - TOTAL_TIME/6);
+          }*/
           break;
         case 2:
           CopyMessage(messages[2],message);
           messagesFlags[2] = 1;
+          /*if(NODE_NUMBER == 0)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME + TOTAL_TIME/6 - TOTAL_TIME/2);
+          }
+          else if(NODE_NUMBER == 1)
+          {
+             phase = 1;
+             counter = (TOTAL_TIME + TOTAL_TIME/6 - TOTAL_TIME/3);
+          }*/
           break;
         case 3:
           CopyMessage(messages[0],message);

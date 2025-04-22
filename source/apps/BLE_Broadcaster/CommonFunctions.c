@@ -33,6 +33,7 @@ void IncludeDevices()
   deviceList[0].expectedSequenceNumber = 0;
   deviceList[0].totalPackages = 0;
   deviceList[0].packageLosses = 0; 
+  deviceList[0].numberOfTransmissions = 0;
   
   for(int i = 0; i < 6; i++)
     deviceList[1].address[i] = 0xBB;
@@ -41,6 +42,7 @@ void IncludeDevices()
   deviceList[1].expectedSequenceNumber = 0;
   deviceList[1].totalPackages = 0;
   deviceList[1].packageLosses = 0;
+  deviceList[1].numberOfTransmissions = 0;
 #if TOTAL_NODES == 3
   for(int i = 0; i < 6; i++)
     deviceList[2].address[i] = 0xCC;
@@ -49,6 +51,7 @@ void IncludeDevices()
   deviceList[2].expectedSequenceNumber = 0;
   deviceList[2].totalPackages = 0;
   deviceList[2].packageLosses = 0;
+  deviceList[2].numberOfTransmissions = 0;
 #endif
       
   for(int i = 0; i < TOTAL_TRANSMISSIONS; i++)
@@ -77,9 +80,9 @@ void ClearMessages()
     messagesFlags[i] = 0;
 }
 
-void GetMessagePayload(uint8* outputAddress, uint8* outputData)
+uint8 GetMessagePayload(uint8* outputAddress, uint8* outputData)
 {
-  if(RFRXFLEN > PAYLOAD_LENGTH)
+  if(RFRXFLEN == (PAYLOAD_LENGTH + 14) )
   {
     RFD;RFD;RFD;
     for(int i = 0; i < 6; i++){
@@ -89,7 +92,9 @@ void GetMessagePayload(uint8* outputAddress, uint8* outputData)
     for(int i = 0; i < PAYLOAD_LENGTH; i++){
       outputData[i] = RFD;
     }
+    return 1;
   }
+  return 0;
 }
 
 void CodingMatrixConfig()

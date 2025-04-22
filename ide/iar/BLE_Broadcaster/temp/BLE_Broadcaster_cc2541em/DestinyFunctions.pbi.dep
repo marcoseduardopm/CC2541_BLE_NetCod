@@ -23,4 +23,5 @@ DestinyFunctions.pbi: \
   C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\ide\iar\BLE_Broadcaster\..\..\..\source\components\targets\interface\hal_led.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\stdio.h \
   C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib/stdarg.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/pseudo_inverse.h
+  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/pseudo_inverse.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\math.h
