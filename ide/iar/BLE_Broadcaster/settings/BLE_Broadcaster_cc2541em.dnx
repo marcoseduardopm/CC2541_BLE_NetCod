@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <settings>
+    <DebugChecksum>
+        <Checksum>3407489618</Checksum>
+    </DebugChecksum>
     <Stack>
         <FillEnabled>0</FillEnabled>
         <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
@@ -11,9 +14,6 @@
         <LimitSize>0</LimitSize>
         <ByteLimit>50</ByteLimit>
     </Stack>
-    <DebugChecksum>
-        <Checksum>4152261664</Checksum>
-    </DebugChecksum>
     <CallStack>
         <ShowArgs>0</ShowArgs>
     </CallStack>
@@ -30,11 +30,12 @@
         <Category>_ 0</Category>
     </LogFile>
     <Breakpoints>
-        <Bp0>_ "STD_CODE" "{$PROJ_DIR$\..\..\..\source\components\devices\cc254x\hal_sleep.c}.155.5" 0 0 0 0 "" 0 ""</Bp0>
-        <Count>1</Count>
+        <Bp0>_ "STD_CODE" "{$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c}.98.4" 0 0 0 0 "" 0 ""</Bp0>
+        <Bp1>_ "STD_CODE" "{$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c}.284.9" 1 0 0 0 "" 0 ""</Bp1>
+        <Count>2</Count>
     </Breakpoints>
     <ChipconEmu>
-        <StopTimersOnHalt>1</StopTimersOnHalt>
+        <StopTimersOnHalt>0</StopTimersOnHalt>
         <LeaveTargetRunning>1</LeaveTargetRunning>
     </ChipconEmu>
     <Aliases>

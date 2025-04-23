@@ -21,6 +21,9 @@ rule browsedata
 
 #Build steps
 build BLE_Broadcaster_cc254x.pbi : index BLE_Broadcaster_cc254x.xcl
+build CommonFunctions.pbi : index CommonFunctions.xcl
+build DestinyFunctions.pbi : index DestinyFunctions.xcl
+build NodeFunctions.pbi : index NodeFunctions.xcl
 build adc.pbi : index adc.xcl
 build hal_int.pbi : index hal_int.xcl
 build clock.pbi : index clock.xcl
@@ -38,11 +41,12 @@ build hal_led.pbi : index hal_led.xcl
 build hal_potmeter.pbi : index hal_potmeter.xcl
 build util.pbi : index util.xcl
 build util_lcd.pbi : index util_lcd.xcl
-build BLE_Broadcaster_cc2541em_part0.pbi : link BLE_Broadcaster_cc254x.pbi adc.pbi hal_int.pbi clock.pbi
-build BLE_Broadcaster_cc2541em_part1.pbi : link hal_mcu.pbi hal_rf_broadcast.pbi hal_rf_proprietary.pbi hal_sleep.pbi
-build BLE_Broadcaster_cc2541em_part2.pbi : link hal_timer2.pbi hal_lcd_srf05.pbi hal_assert.pbi hal_board.pbi
-build BLE_Broadcaster_cc2541em_part3.pbi : link hal_button.pbi hal_joystick.pbi hal_led.pbi hal_potmeter.pbi
-build BLE_Broadcaster_cc2541em_part4.pbi : link util.pbi util_lcd.pbi
+build pseudo_inverse.pbi : index pseudo_inverse.xcl
+build BLE_Broadcaster_cc2541em_part0.pbi : link BLE_Broadcaster_cc254x.pbi CommonFunctions.pbi DestinyFunctions.pbi NodeFunctions.pbi adc.pbi
+build BLE_Broadcaster_cc2541em_part1.pbi : link hal_int.pbi clock.pbi hal_mcu.pbi hal_rf_broadcast.pbi hal_rf_proprietary.pbi
+build BLE_Broadcaster_cc2541em_part2.pbi : link hal_sleep.pbi hal_timer2.pbi hal_lcd_srf05.pbi hal_assert.pbi hal_board.pbi
+build BLE_Broadcaster_cc2541em_part3.pbi : link hal_button.pbi hal_joystick.pbi hal_led.pbi hal_potmeter.pbi util.pbi
+build BLE_Broadcaster_cc2541em_part4.pbi : link util_lcd.pbi pseudo_inverse.pbi
 build BLE_Broadcaster_cc2541em.pbd : link BLE_Broadcaster_cc2541em_part0.pbi BLE_Broadcaster_cc2541em_part1.pbi BLE_Broadcaster_cc2541em_part2.pbi BLE_Broadcaster_cc2541em_part3.pbi BLE_Broadcaster_cc2541em_part4.pbi
 build BLE_Broadcaster_cc2541em.pbw : browsedata BLE_Broadcaster_cc2541em.pbd
 

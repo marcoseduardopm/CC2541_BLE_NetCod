@@ -9,9 +9,9 @@
         <debug>1</debug>
         <settings>
             <name>General</name>
-            <archiveVersion>5</archiveVersion>
+            <archiveVersion>4</archiveVersion>
             <data>
-                <version>10</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -279,19 +279,7 @@
                 </option>
                 <option>
                     <name>OGChipConfigPath</name>
-                    <state>C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\8051\bin\..\config\devices\Texas Instruments\CC25xx\4x\CC2541F256.i51</state>
-                </option>
-                <option>
-                    <name>PCReadOnly</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>Ext2ExcludeBank0</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>AlternativeSfrAddresses</name>
-                    <state></state>
+                    <state>C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\8051\bin\..\config\devices\Texas Instruments\CC25xx\4x\CC2541F256.i51</state>
                 </option>
             </data>
         </settings>

@@ -175,7 +175,7 @@
                 </option>
                 <option>
                     <name>General Xdata Stack Size</name>
-                    <state>0x100</state>
+                    <state>0x500</state>
                 </option>
                 <option>
                     <name>General Ext Stack Size</name>
@@ -320,7 +320,6 @@
                     <state>chip=2541</state>
                     <state>POWER_SAVING=1</state>
                     <state>LCD_EXCLUDE</state>
-                    <state>HAL_UART=TRUE</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -487,6 +486,7 @@
                     <state>$PROJ_DIR$\..\..\..\source\components\devices\cc254x</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\</state>
                     <state>$PROJ_DIR$\..\..\..\source\components\utils</state>
+                    <state>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -760,7 +760,7 @@
                 <debug>1</debug>
                 <option>
                     <name>XOutOverride</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OutputFile</name>
@@ -1141,6 +1141,24 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\CommonFunctions.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\DestinyFunctions.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.h</name>
+        </file>
     </group>
     <group>
         <name>common</name>
@@ -1295,4 +1313,10 @@
             <name>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.h</name>
         </file>
     </group>
+    <file>
+        <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.h</name>
+    </file>
 </project>
