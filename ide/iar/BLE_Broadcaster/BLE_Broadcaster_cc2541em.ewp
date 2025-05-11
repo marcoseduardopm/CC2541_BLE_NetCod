@@ -1159,6 +1159,12 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\NodeFunctions.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\ps_inv.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\ps_inv.h</name>
+        </file>
     </group>
     <group>
         <name>common</name>
@@ -1313,10 +1319,4 @@
             <name>$PROJ_DIR$\..\..\..\source\components\utils\util_lcd.h</name>
         </file>
     </group>
-    <file>
-        <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.h</name>
-    </file>
 </project>

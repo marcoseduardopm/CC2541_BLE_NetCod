@@ -46,10 +46,24 @@ uint8 ReceiveInitSignal()
       GetMessagePayload(addressBytes,payload);
       uint8 messageType = payload[0];
       
+      uint16 message[(PAYLOAD_LENGTH-2)/2];
+      
+      //Obtain the int16 values
+      for(int i = 2; i < PAYLOAD_LENGTH; i+=2)
+      {
+        message[(i-2)/2] = (((uint16)payload[i]) << 8) | payload[i+1];
+      }
+      
       if(messageType == 255)
       {
         phase = 0;
         myNumber = 0;
+        //mask payload[1]
+        operationMode = (uint8)message[0];
+        totalNodes = (uint16)message[1];
+        totalTransmissions = (uint16)message[2];
+        txPower = (uint8)message[3];
+  
         halRfCommand(CMD_RXFIFO_RESET);
         rfirqf1 = 0;
         return 1;
@@ -476,19 +490,19 @@ void NodeRun()
   if(!actedThisPhase)
   {
     actedThisPhase = 1;
-#if OPERATION_MODE == DAF
-#if TOTAL_NODES == 2
-    DAF2();
-#elif TOTAL_NODES == 3
-    DAF3();
-#endif
-#else
-#if TOTAL_NODES == 2
-    Collaboration2();
-#elif TOTAL_NODES == 3
-    Collaboration3();
-#endif
-#endif
+    if(operationMode == DAF) {
+      if(totalNodes == 2) {
+        DAF2();
+      } else if(totalNodes == 3) {
+        DAF3();
+      }
+    } else {
+      if(totalNodes == 2) {
+        Collaboration2();
+      } else if(totalNodes == 3) {
+        Collaboration3();
+      }
+    }
   }
   else
     Receive();

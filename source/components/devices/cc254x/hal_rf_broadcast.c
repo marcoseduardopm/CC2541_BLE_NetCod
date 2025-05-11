@@ -150,7 +150,7 @@ void halRfBroadcastInit(void)
     //0xE1 = 0dBm
     //0xE5 = 4dBm
     //0xF3 = 18dBm
-    TXPOWER   = 0xF3;               // Set output power: 18 dBm.
+    TXPOWER   = txPower;//0xF3;               // Set output power: 18 dBm.
     TXFILTCFG = 0x07;               // Set Tx filter bandwidth.
     IVCTRL    = 0x13;               // Set PA, mixer and DAC bias.
     ADCTEST0  = 0x10;               // Adjust ADC gain.

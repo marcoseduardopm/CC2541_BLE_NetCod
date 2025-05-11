@@ -94,36 +94,49 @@
 * 0x00000000.                                                                 */
 #define SYNCWORD 0x29417671
 
-//Define if its a Node or a Destiny
-//#define MODETX
-
-#ifdef MODETX
-#define NODE_NUMBER 1
-#endif
-
-#define PAYLOAD_LENGTH 26
-#define CHANNEL BLE_BROADCAST_CHANNEL_37
-//#define CHANNEL 24
-#define TOTAL_TIME 240
-
 #define DAF 1
 #define BNC 2
 #define DNC 3
 #define GDNC 4
 
-#define OPERATION_MODE GDNC
-#define TOTAL_NODES 2
-#define TOTAL_TRANSMISSIONS 10
+//Define if its a Node or a Destiny
+//#define MODETX
+#define MAX_TOTAL_TRANSMISSIONS 1000
 
-#if TOTAL_NODES == 2
-#define ROWS 4
-#define COLS 2
-#define TIME_SLICES 4
-#elif TOTAL_NODES == 3
-#define ROWS 9
-#define COLS 3
-#define TIME_SLICES 9
+#ifdef MODETX
+  //nodes
+  #define NODE_NUMBER 0
+#else
+  //for server only
+  #define SERVER_DEF_TOTAL_NODES 2
+  #define SERVER_DEF_TIMES_PER_CONFIG 10 //how many times to repeat per configuration?
+  #define SERVER_DEF_TOTAL_TRANSMISSIONS_PER_TIME 50 //how many transmission per timer (real total per config = SERVER_DEF_TIMES_PER_CONFIG * SERVER_DEF_TOTAL_TRANSMISSIONS_PER_TIME)
+  //#define SERVER_DEF_OPERATION_MODE GDNC //not used
+  //#define SERVER_DEF_TXPOWER 0xF3
+  //0xE1 = 0dBm
+  //0xE5 = 4dBm
+  //0xF3 = 18dBm 
 #endif
+
+//#define MAX_COLS 3
+//#define MAX_ROWS 9
+#define MAX_COLS 3
+#define MAX_ROWS 9
+#define PAYLOAD_LENGTH 26
+#define CHANNEL BLE_BROADCAST_CHANNEL_37
+#define TOTAL_TIME 240
+
+
+//operation_mode, totalNodes, totalTransmissions, and txPower sent by the server
+extern uint8 operationMode;
+extern uint16 totalNodes;
+extern uint16 totalTransmissions;
+extern uint8 txPower;
+
+//cols, rows, time_slices  calculated after receiving the configuration from 
+extern uint16 rows;
+extern uint16 cols;
+extern uint8 timeSlices;
 
 struct deviceMap
 {
@@ -136,26 +149,48 @@ struct deviceMap
   uint32 numberOfTransmissions;
   float rssiSum;
   int8 rssi;
-  uint8 receivedMessages[TOTAL_TRANSMISSIONS + 1];
+  uint8 receivedMessages[MAX_TOTAL_TRANSMISSIONS + 1];
 };
 
 typedef struct deviceMap deviceMap;
 
 extern volatile uint8 rfirqf1;
-extern deviceMap deviceList[COLS];
+extern deviceMap deviceList[MAX_COLS];
 extern uint8 addressBytes[6];
-extern uint8 messages[COLS][(PAYLOAD_LENGTH-2)/2];
+extern uint8 messages[MAX_COLS][(PAYLOAD_LENGTH-2)/2];
 extern uint8 actedThisPhase;
 extern uint16 myNumber;
 extern uint8 phase;
 extern uint8 transmissionDone;
-extern uint16 counter;
+extern volatile uint16 counter;
 extern uint8 messagesFlags[9];
 extern uint16 numberOfTransmissions;
 extern uint8 receivedMask;
   
-extern uint8 codingMatrix[ROWS][COLS];
-extern uint16 resultMatrix[ROWS][(PAYLOAD_LENGTH-2)/2];
-extern double inverseCodingMatrix[COLS][ROWS];
+extern uint8 codingMatrix[MAX_ROWS][MAX_COLS]; //codingMatrixDouble is used instead of this one in the inv. calls
+extern uint16 resultMatrix[MAX_ROWS][(PAYLOAD_LENGTH-2)/2];
+
+//vars for inverse function
+extern double *dataCodingMatrixDouble;
+extern double **codingMatrixDouble;
+//extern double *dataInverseMatrixDouble; //OOM while trying to allocate
+//extern double **inverseCodingMatrixDouble;
+
+
+//#if TOTAL_NODES == 2
+
+#define ROWS_2_NODES 4
+#define COLS_2_NODES 2
+//#define TIME_SLICES 4
+//#elif TOTAL_NODES == 3
+#define ROWS_3_NODES 9
+#define COLS_3_NODES 3
+//#define TIME_SLICES 9
+//#endif
+extern double inverseCodingMatrix2Nodes[COLS_2_NODES][ROWS_2_NODES];
+extern double inverseCodingMatrix3Nodes[COLS_3_NODES][ROWS_3_NODES];
+
+//extern double codingMatrixDouble[MAX_ROWS][MAX_COLS];
+//extern double inverseCodingMatrixDouble[MAX_COLS][MAX_ROWS];
 
 #endif
