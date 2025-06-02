@@ -20,6 +20,15 @@
     <Disassembly>
         <MixedMode>1</MixedMode>
     </Disassembly>
+    <TermIOLog>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\Coding.log"</LogFile>
+    </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
+        <Category>_ 20</Category>
+    </LogFile>
     <Breakpoints>
         <Bp0>_ "STD_CODE" "{$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\pseudo_inverse.c}.98.4" 0 0 0 0 "" 0 ""</Bp0>
         <Bp1>_ "STD_CODE" "{$PROJ_DIR$\..\..\..\source\apps\BLE_Broadcaster\BLE_Broadcaster_cc254x.c}.607.1" 0 0 0 0 "" 0 ""</Bp1>
@@ -31,15 +40,6 @@
         <StopTimersOnHalt>0</StopTimersOnHalt>
         <LeaveTargetRunning>1</LeaveTargetRunning>
     </ChipconEmu>
-    <TermIOLog>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\Coding.log"</LogFile>
-    </TermIOLog>
-    <LogFile>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
-        <Category>_ 20</Category>
-    </LogFile>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
