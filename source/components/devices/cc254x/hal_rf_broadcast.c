@@ -45,7 +45,7 @@
 #include "string.h"
 #include "ioCC2541.h"
 #include "prop_regs.h"
-#include "BLE_Broadcaster_cc254x.h"
+#include "BLE_NC_cc254x.h"
 
 void obtainSem0()
 {
@@ -54,7 +54,7 @@ void obtainSem0()
   changed to 0 when they are read. If a semaphore register is read and the value was 1, the semaphore
   has been successfully taken, and subsequent reads of the register return 0 until the semaphore is
   released. If a semaphore register is read as 0, the semaphore was not free.*/
-  
+
   while((sem = SEMAPHORE0) != 1);
 }
 void releaseSem0()
@@ -71,7 +71,7 @@ void obtainSem1()
   changed to 0 when they are read. If a semaphore register is read and the value was 1, the semaphore
   has been successfully taken, and subsequent reads of the register return 0 until the semaphore is
   released. If a semaphore register is read as 0, the semaphore was not free.*/
-  
+
   while((sem = SEMAPHORE1) != 1);
 }
 void releaseSem1()
@@ -88,28 +88,28 @@ void releaseSem1()
 *
 * @return      void
 */
-void halRfBroadcastInit(void) 
-{ 
-    // Clear radio memory (The RAM registers don't have a default value set, must be set manually). 
+void halRfBroadcastInit(void)
+{
+    // Clear radio memory (The RAM registers don't have a default value set, must be set manually).
     memset((void*)RFCORE_RAM_PAGE, 0, RFCORE_RAM_PAGE_SZ);
     halRfInit();
-    
+
     // No timer 2 events sent to LLE.
     T2EVTCFG = 0x77;
-    
+
     obtainSem0();
     //Sem0
     PRF.TASK_CONF.MODE              = 0;    // Basic mode, fixed length.
     PRF.TASK_CONF.REPEAT            = 0;    // no repeat.
     PRF.TASK_CONF.START_CONF        = 0;    // Start transmit immediately on command.
     PRF.TASK_CONF.STOP_CONF         = 0;    // Don't stop on timer 2 event 2.
-        
+
     //Sem0
     PRF.PKT_CONF.ADDR_LEN           = 0;    // No address byte.
     PRF.PKT_CONF.AGC_EN             = 0;    // AGC disabled.
-    PRF.PKT_CONF.START_TONE         = 0;    // No tone in front of packet.   
+    PRF.PKT_CONF.START_TONE         = 0;    // No tone in front of packet.
     releaseSem0();
-    
+
     obtainSem1();
     //Sem1
     PRF.FIFO_CONF.TX_ADDR_CONF      = 0;    // Read address from PRF.ADDR_ENTRY[0].ADDRESS.
@@ -118,13 +118,13 @@ void halRfBroadcastInit(void)
     PRF.FIFO_CONF.AUTOFLUSH_EMPTY   = 0;    // Flush packets with no payload
     PRF.FIFO_CONF.RX_STATUS_CONF    = 0;    // Don't append status information in FIFO
     PRF.FIFO_CONF.RX_ADDR_CONF      = 0;    // no Address byte in Rx FIFO
-    
+
     //Sem1
     PRF.ADDR_ENTRY[0].CONF.REUSE    = 0;    // Reuse packet on same adv event (same payload on all three if active broadcast channels.)
     PRF.ADDR_ENTRY[0].CONF.ENA0 = 1;        // Necessary, according to TI to receive BLE packets.
     PRF.ADDR_ENTRY[0].CONF.VARLEN = 0;           // 0: Use fixed length given by RXLENGTH in receiver when receiving packets or ACKs
     PRF.ADDR_ENTRY[0].RXLENGTH = PAYLOAD_LENGTH + 13;        //16 //needs to be adjusted according to the packet we want to receive
-    
+
     //Sem1
     // Set 3 byte CRC.
 //    PRF_CRC_LEN = 0x03;
@@ -133,16 +133,16 @@ void halRfBroadcastInit(void)
 //    PRF_CRC_INIT[2] = 0x55;
 //    PRF_CRC_INIT[3] = 0x55;
     //PRF_CRC_INIT[3] = 0x56; //test wrong crc
-   
+
     PRF_CRC_LEN = 0x03;
     PRF_CRC_INIT[0] = 0x00;
     PRF_CRC_INIT[1] = 0x55;
     PRF_CRC_INIT[2] = 0x55;
     PRF_CRC_INIT[3] = 0x55;
-    
+
     releaseSem1();
-    
-    
+
+
     // Update these
     TXCTRL    = 0x69;
     //https://community.silabs.com/s/article/kba-bt-0410-tx-power-limitations-for-regulatory-compliance-etsi-fcc-x?language=en_US
@@ -154,12 +154,12 @@ void halRfBroadcastInit(void)
     TXFILTCFG = 0x07;               // Set Tx filter bandwidth.
     IVCTRL    = 0x13;               // Set PA, mixer and DAC bias.
     ADCTEST0  = 0x10;               // Adjust ADC gain.
-    
-    FRMCTRL0  = 0x40;               // Data goes LSB over the air. 
-    MDMCTRL0  = 0x04;               // Set 1 Mbps at 250 kHz deviation. 
+
+    FRMCTRL0  = 0x40;               // Data goes LSB over the air.
+    MDMCTRL0  = 0x04;               // Set 1 Mbps at 250 kHz deviation.
     MDMCTRL1  = 0x48;               // Correlation threshold.
     MDMCTRL2  = 0x00;               // Syncword transmitted LSB to MSB, 1 leading preamble byte.
-    
+
 /*   MDMCTRL3
     0x23 -> 00: Correlation value above threshold is sufficient as sync criterion.
     0x63 -> 01: Correlation value above threshold and data decision on all symbols of
@@ -167,12 +167,12 @@ void halRfBroadcastInit(void)
     0xA3 -> 10: Correlation value above threshold and data decision on all symbols of
     sync word is used as sync criterion. Accept one bit error in sync word
     11: Reserved*/
-    //MDMCTRL3 = 0x23; 
+    //MDMCTRL3 = 0x23;
     //MDMCTRL3  = 0x63;               // Set RSSI mode to peak detect after sync.
     MDMCTRL3  = 0xA3;
-    
-    MDMTEST0  = 0x01; 
-     
+
+    MDMTEST0  = 0x01;
+
     // Set 32 bit sync word:
     SW_CONF = 0x00; // for BLE: 4 byte of access address, which is always 0x8E89BED6 for advertizing packets.
     SW0 = 0xD6;
@@ -183,8 +183,8 @@ void halRfBroadcastInit(void)
 //    SW1 = 0x23;
 //    SW2 = 0x45;
 //    SW3 = 0x67;
-    
-    
+
+
     // Enable PN7 whitener.
     BSP_P0 = 0x00;
     BSP_P1 = 0x5B;
@@ -198,26 +198,26 @@ void halRfBroadcastInit(void)
 * @fn          	halRfBroadcastSetChannel
 *
 * @brief       	Change broadcast channel.
-*	     
+*
 * @note         LLE must be idle while changing frequency.
-*				
+*
 * @param        unsigned char AdvChannel: Advertising channel 37, 38 or 39.
 *
 * @return       SUCCESS:                Channel changed successfully.
 *               FAIL_INVALID_PARAMETER: An illegal argument was supplied.
 *               FAIL_RADIO_ACTIVE:      Radio is in TX/RX.
 */
-unsigned char halRfBroadcastSetChannel(unsigned char AdvChannel) 
+unsigned char halRfBroadcastSetChannel(unsigned char AdvChannel)
 {
- 
+
   obtainSem0();
-  
+
     // Check if radio is idle or else return failure.
     if(RFSTAT & (RFSTAT_TX_ACTIVE | RFSTAT_RX_ACTIVE)) {
         // Radio is in TX/RX, exit with fail.
         return FAIL_RADIO_ACTIVE;
     }
-    
+
   /* Initialization of PN7 whitener in accordance with advertising channel.
    * PRF_W_INIT should be set to 37, 38, or 39 (0x25, 0x26, or 0x27).
    */
@@ -254,38 +254,38 @@ unsigned char halRfBroadcastSetChannel(unsigned char AdvChannel)
 *              Hard coded public address: 0x112233445566
 *
 * @param       unsigned char *AdvData: Advertising data.
-* @param       unsigned char AdvDataLength: Length of advertising data. 
+* @param       unsigned char AdvDataLength: Length of advertising data.
 *
 * @return      SUCCESS: Packet loaded in to TXFIFO without errors.
-*              FAIL_LENGTH: AdvData length is above maximum limit (26 bytes). 
+*              FAIL_LENGTH: AdvData length is above maximum limit (26 bytes).
 */
 unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char AdvDataLength, unsigned char *Address) {
 
     /* Local variables */
-    unsigned char i = 0;  
-  
+    unsigned char i = 0;
+
     /* Check for maximum allowed payload size (AdvData allowed size: 0-31 bytes) */
     if(AdvDataLength > 26) {
       return FAIL_LENGTH;
     }
-  
+
     /* BLE header and TXFIFO length paramter (required) */
     RFD = AdvDataLength + 13;       // FIFO entry length (Payload + BLE header + BLE length byte), (not transmitted).
-    
-    //Before transmitting the data below, the preamble and address (SYNC for the prop. protocol) are transmitted automatically. 
+
+    //Before transmitting the data below, the preamble and address (SYNC for the prop. protocol) are transmitted automatically.
     //Then, the Header of BLE and the total length of the remaining data (minus the CRC, which is transmitted automatically) are transmitted
     //Finally, the CRC is transmitted automatically.
     RFD = 0x02;                     // BLE header ADV_NONCONN_IND PDU type (transmitted).
     RFD = AdvDataLength + 11;       // BLE length byte (transmitted).
-  
+
     /* BLE: Advertiser’s public or random device address (required) */
     RFD = Address[0]; // Address (LSB)
     RFD = Address[1];
     RFD = Address[2];
     RFD = Address[3];
     RFD = Address[4];
-    RFD = Address[5]; // Address (MSB)  
-    
+    RFD = Address[5]; // Address (MSB)
+
     /* AdvData/payload (required) */
 
     // BLE: Flags.
@@ -296,12 +296,12 @@ unsigned char halRfBroadcastLoadPacket(unsigned char *AdvData, unsigned char Adv
     // BLE: Manufacturer Specific Data
     RFD = AdvDataLength + 1;    // Length of next Data.
     RFD = 0xFF;                 // Type "Manufacturer Specific Data"
-    
+
     /* AdvData/payload (optional) */
     for (i = 0; i < AdvDataLength; i++) {
         RFD = AdvData[i];
     }
-    
+
     /* Packet successfully loaded in to TXFIFO. */
     return 0;//0=SUCCESS;
 }

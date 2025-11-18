@@ -48,7 +48,7 @@ Experiments were conducted using **JDY-08 Bluetooth modules**, low-cost breakout
 ---
 
 ### Main File Descriptions
-- **BLE_Broadcaster_cc254x.c**  
+- **BLE_NC_cc254x.c**  
   Handles advertisement broadcasting, scanning for partner packets, and performing network coding operations.
 
 ---

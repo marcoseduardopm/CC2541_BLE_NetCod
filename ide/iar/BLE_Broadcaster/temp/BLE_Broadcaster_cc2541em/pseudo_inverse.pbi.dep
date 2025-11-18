@@ -1,7 +1,0 @@
-pseudo_inverse.pbi: \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster\pseudo_inverse.c \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\string.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib/sysmac.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\float.h \
-  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.3\8051\inc\clib\math.h \
-  C:\Users\pedro\OneDrive\Documentos\Iar\ Embedded\CC2541_BLE_NetCod\source\apps\BLE_Broadcaster/pseudo_inverse.h

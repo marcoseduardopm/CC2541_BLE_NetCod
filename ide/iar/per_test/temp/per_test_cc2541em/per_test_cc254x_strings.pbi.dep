@@ -1,3 +1,0 @@
-per_test_cc254x_strings.pbi: \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\source\apps\per_test\per_test_cc254x_strings.c \
-  C:\Texas\ Instruments\CC2541_BLE_NetCod\ide\iar\per_test\..\..\..\source\components\common\hal_types.h
