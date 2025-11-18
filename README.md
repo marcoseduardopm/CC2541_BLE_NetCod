@@ -1,4 +1,4 @@
-# CC2541_BLE_NetCod: Network Coding in BLE Networks
+# Network Coding in BLE Networks
 
 This repository contains the source code and experimental data for the paper **"Network Coding in BLE Networks"**, which investigates the application of network coding–based diversity techniques to enhance the reliability of Bluetooth Low Energy (BLE) communications.
 
