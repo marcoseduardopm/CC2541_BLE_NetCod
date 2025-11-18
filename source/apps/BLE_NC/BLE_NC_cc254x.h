@@ -73,7 +73,7 @@
 #define DNC 3
 #define GDNC 4
 
-//Define if its a Node or a Destiny
+//Define for the Destiny, comment otherwise.
 //#define MODETX
 
 
